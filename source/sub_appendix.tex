@@ -1,339 +1,339 @@
 \documentclass[main.tex]{subfiles}
 
 \begin{document}
-\section*{Appendix 1: Reference Design of Instruction Opcodes}
+\section*{附录1：指令操作码的参考设计}
 
 \begin{spverbatim}
   /*
-  * @notice opcode enum is used to represent the instruction of the DARC protocol.
+  * @notice opcode枚举用于表示DARC协议的指令。
 */
 
 enum EnumOpcode {
 
   /**
-   * @notice Invalid Operation
+   * @notice 无效操作
    * ID: 0
    */
   UNDEFINED,
 
   /**
-   * @notice Batch Mint Token Operation
-   * @param ADDRESS_2DARRAY[0] address[] toAddressArray: the array of the address to mint new token to
-   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: the array of the token class index to mint new token from
-   * @param UINT256_2DARRAY[1] uint256[] amountArray: the array of the amount of the token to mint
+   * @notice 批量铸造代币操作
+   * @param ADDRESS_2DARRAY[0] address[] toAddressArray: 需要铸造新代币的地址数组
+   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: 需要铸造新代币的代币类别索引数组
+   * @param UINT256_2DARRAY[1] uint256[] amountArray: 需要铸造的代币数量数组
    * 
    * ID: 1
    */
   BATCH_MINT_TOKENS,
 
   /**
-   * @notice Batch Create Token Class Operation
-   * @param STRING_ARRAY[] string[] nameArray: the array of the name of the token class to create
-   * @param UINT256_2DARRAY[0] uint256[] tokenIndexArray: the array of the token index of the token class to create
-   * @param UINT256_2DARRAY[1] uint256[] votingWeightArray: the array of the voting weight of the token class to create
-   * @param UINT256_2DARRAY[2] uint256[] dividendWeightArray: the array of the dividend weight of the token class to create
+   * @notice 批量创建代币类别操作
+   * @param STRING_ARRAY[] string[] nameArray: 需要创建的代币类别名称数组
+   * @param UINT256_2DARRAY[0] uint256[] tokenIndexArray: 需要创建的代币类别的代币索引数组
+   * @param UINT256_2DARRAY[1] uint256[] votingWeightArray: 需要创建的代币类别的投票权重数组
+   * @param UINT256_2DARRAY[2] uint256[] dividendWeightArray: 需要创建的代币类别的分红权重数组
    * 
    * ID:2
    */
   BATCH_CREATE_TOKEN_CLASSES,
 
   /**
-   * @notice Batch Transfer Token Operation
-   * @param ADDRESS_2DARRAY[0] address[] toAddressArray: the array of the address to transfer token to
-   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: the array of the token class index to transfer token from
-   * @param UINT256_2DARRAY[1] uint256[] amountArray: the array of the amount of the token to transfer
+   * @notice 批量转移代币操作
+   * @param ADDRESS_2DARRAY[0] address[] toAddressArray: 需要转移代币到的地址数组
+   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: 需要转移代币的代币类别索引数组
+   * @param UINT256_2DARRAY[1] uint256[] amountArray: 需要转移的代币数量数组
    * 
    * ID:3
    */
   BATCH_TRANSFER_TOKENS,
 
   /**
-   * @notice Batch Transfer Token From Addr A to Addr B Operation
-   * @param ADDRESS_2DARRAY[0] address[] fromAddressArray: the array of the address to transfer token from
-   * @param ADDRESS_2DARRAY[1] address[] toAddressArray: the array of the address to transfer token to
-   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: the array of the token class index to transfer token from
-   * @param UINT256_2DARRAY[1] uint256[] amountArray: the array of the amount of the token to transfer
+   * @notice 批量从地址A转移到地址B的代币操作
+   * @param ADDRESS_2DARRAY[0] address[] fromAddressArray: 需要从中转移代币的地址数组
+   * @param ADDRESS_2DARRAY[1] address[] toAddressArray: 需要转移代币到的地址数组
+   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: 需要转移代币的代币类别索引数组
+   * @param UINT256_2DARRAY[1] uint256[] amountArray: 需要转移的代币数量数组
    * 
    * ID:4
    */
   BATCH_TRANSFER_TOKENS_FROM_TO,
 
   /**
-   * @notice Batch Burn Token Operation
-   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: the array of the token class index to burn token from
-   * @param UINT256_2DARRAY[1] uint256[] amountArray: the array of the amount of the token to burn
+   * @notice 批量销毁代币操作
+   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: 需要销毁代币的代币类别索引数组
+   * @param UINT256_2DARRAY[1] uint256[] amountArray: 需要销毁的代币数量数组
    * 
    * ID:5
    */
   BATCH_BURN_TOKENS,
 
   /**
-   * @notice Batch Burn Token From Addr A Operation
-   * @param ADDRESS_2DARRAY[0] address[] fromAddressArray: the array of the address to burn token from
-   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: the array of the token class index to burn token from
-   * @param UINT256_2DARRAY[1] uint256[] amountArray: the array of the amount of the token to burn
+   * @notice 批量从地址A销毁代币操作
+   * @param ADDRESS_2DARRAY[0] address[] fromAddressArray: 需要从中销毁代币的地址数组
+   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: 需要销毁代币的代币类别索引数组
+   * @param UINT256_2DARRAY[1] uint256[] amountArray: 需要销毁的代币数量数组
    * 
    * ID:6
    */
   BATCH_BURN_TOKENS_FROM,
 
   /**
-   * @notice Batch Add Member Operation
-   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: the array of the address to add as member
-   * @param UINT256_2DARRAY[0] uint256[] memberRoleArray: the array of the role of the member to add
-   * @param STRING_ARRAY string[] memberNameArray: the array of the name of the member to add
+   * @notice 批量添加成员操作
+   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: 需要作为成员添加的地址数组
+   * @param UINT256_2DARRAY[0] uint256[] memberRoleArray: 需要添加的成员角色数组
+   * @param STRING_ARRAY string[] memberNameArray: 需要添加的成员名称数组
    * 
    * ID:7
    */
   BATCH_ADD_MEMBERSHIP,
 
   /**
-   * @notice Batch Suspend Member Operation
-   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: the array of the address to suspend as member
+   * @notice 批量暂停成员操作
+   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: 需要暂停的成员地址数组
    * 
    * ID:8
    */
   BATCH_SUSPEND_MEMBERSHIP,
 
   /**
-   * @notice Batch Resume Member Operation
-   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: the array of the address to reinstate as member
+   * @notice 批量恢复成员操作
+   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: 需要恢复的成员地址数组
    * 
    * ID:9
    */
   BATCH_RESUME_MEMBERSHIP,
 
   /**
-   * @notice Batch Change Member Role Operation
-   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: the array of the address to change role of as member
-   * @param UINT256_2DARRAY[0] uint256[] memberRoleArray: the array of the role of the member to change
+   * @notice 批量更改成员角色操作
+   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: 需要更改角色的成员地址数组
+   * @param UINT256_2DARRAY[0] uint256[] memberRoleArray: 需要更改的成员角色数组
    * 
    * ID:10
    */
   BATCH_CHANGE_MEMBER_ROLES,
 
   /**
-   * @notice Batch Change Member Name Operation
-   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: the array of the address to change name of as member
-   * @param STRING_ARRAY string[] memberNameArray: the array of the name of the member to change
+   * @notice 批量更改成员名称操作
+   * @param ADDRESS_2DARRAY[0] address[] memberAddressArray: 需要更改名称的成员地址数组
+   * @param STRING_ARRAY string[] memberNameArray: 需要更改的成员名称数组
    * 
    * ID:11
    */
   BATCH_CHANGE_MEMBER_NAMES,
 
   /**
-   * @notice Batch Add Emergency Agent Operation
-   * @param Plugin[] pluginList: the array of the plugins
+   * @notice 批量添加紧急代理操作
+   * @param Plugin[] pluginList: 插件数组
    * ID:12
    */
   BATCH_ADD_PLUGINS,
 
   /**
-   * @notice Batch Enable Plugin Operation
-   * @param UINT256_ARRAY[0] uint256[] pluginIndexArray: the array of the plugins index to enable
-   * @param BOOL_ARRAY bool[] isBeforeOperationArray: the array of the flag to indicate if the plugin is before operation
+   * @notice 批量启用插件操作
+   * @param UINT256_ARRAY[0] uint256[] pluginIndexArray: 需要启用的插件索引数组
+   * @param BOOL_ARRAY bool[] isBeforeOperationArray: 标志数组，指示插件是否为操作前插件
    * ID:13
    */
   BATCH_ENABLE_PLUGINS,
 
   /**
-   * @notice Batch Disable Plugin Operation
-   * @param UINT256_ARRAY[0] uint256[] pluginIndexArray: the array of the plugins index to disable
-   * @param BOOL_ARRAY bool[] isBeforeOperationArray: the array of the flag to indicate if the plugin is before operation
+   * @notice 批量禁用插件操作
+   * @param UINT256_ARRAY[0] uint256[] pluginIndexArray: 需要禁用的插件索引数组
+   * @param BOOL_ARRAY bool[] isBeforeOperationArray: 标志数组，指示插件是否为操作前插件
    * ID:14
    */
   BATCH_DISABLE_PLUGINS,
 
   /**
-   * @notice Batch Add and Enable Plugin Operation
-   * @param Plugin[] pluginList: the array of the plugins
+   * @notice 批量添加并启用插件操作
+   * @param Plugin[] pluginList: 插件数组
    * ID:15
    */
   BATCH_ADD_AND_ENABLE_PLUGINS,
 
   /**
-   * @notice Batch Set Parameter Operation
-   * @param MachineParameter[] parameterNameArray: the array of the parameter name
-   * @param UINT256_2DARRAY[0] uint256[] parameterValueArray: the array of the parameter value
+   * @notice 批量设置参数操作
+   * @param MachineParameter[] parameterNameArray: 参数名称数组
+   * @param UINT256_2DARRAY[0] uint256[] parameterValueArray: 参数值数组
    * ID:16
    */
   BATCH_SET_PARAMETERS,
 
   /**
-   * @notice Batch Add Withdrawable Balance Operation
-   * @param address[] addressArray: the array of the address to add withdrawable balance
-   * @param uint256[] amountArray: the array of the amount to add withdrawable balance
+   * @notice 批量添加可提现余额操作
+   * @param address[] addressArray: 需要添加可提现余额的地址数组
+   * @param uint256[] amountArray: 需要添加的可提现余额数量数组
    * ID:17
    */
   BATCH_ADD_WITHDRAWABLE_BALANCES,
 
   /**
-   * @notice Batch Reduce Withdrawable Balance Operation
-   * @param address[] addressArray: the array of the address to substract withdrawable balance
-   * @param uint256[] amountArray: the array of the amount to substract withdrawable balance
+   * @notice 批量减少可提现余额操作
+   * @param address[] addressArray: 需要减少可提现余额的地址数组
+   * @param uint256[] amountArray: 需要减少的可提现余额数量数组
    * ID:18
    */
   BATCH_REDUCE_WITHDRAWABLE_BALANCES,
 
   /**
-   * @notice Batch Add Voting Rules
-   * @param VotingRule[] votingRuleList: the array of the voting rules
+   * @notice 批量添加投票规则
+   * @param VotingRule[] votingRuleList: 投票规则数组
    * ID:19
    */
   BATCH_ADD_VOTING_RULES,
 
 
   /**
-   * @notice Batch Pay to Mint Tokens Operation
-   * @param ADDRESS_2DARRAY[0] address[] addressArray: the array of the address to mint tokens
-   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: the array of the token class index to mint tokens
-   * @param UINT256_2DARRAY[1] uint256[] amountArray: the array of the amount to mint tokens
-   * @param UINT256_2DARRAY[2] uint256[] priceArray: the price of each token class to mint
-   * @param UINT256_2DARRAY[3] uint256[1] dividendableFlag: the flag to indicate if the payment is dividendable. 1 for yes (pay for purchase), 0 for no (pay for investment)
+   * @notice 批量支付以铸造代币操作
+   * @param ADDRESS_2DARRAY[0] address[] addressArray: 需要铸造代币的地址数组
+   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: 需要铸造代币的代币类别索引数组
+   * @param UINT256_2DARRAY[1] uint256[] amountArray: 需要铸造的代币数量数组
+   * @param UINT256_2DARRAY[2] uint256[] priceArray: 每个代币类别铸造的价格
+   * @param UINT256_2DARRAY[3] uint256[1] dividendableFlag: 标志，指示支付是否可分红。1为是（支付购买），0为否（支付投资）
    * ID:20
    */
   BATCH_PAY_TO_MINT_TOKENS,
 
   /**
-   * @notice Pay some cash to transfer tokens (can be used as product coins)
-   * @param ADDRESS_2DARRAY[0] address[] toAddressArray: the array of the address to transfer token to
-   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: the array of the token class index to transfer token from
-   * @param UINT256_2DARRAY[1] uint256[] amountArray: the array of the amount of the token to transfer
-   * @param UINT256_2DARRAY[2] uint256[] priceArray: the price of each token class to transfer
-   * @ param UINT256_2DARRAY[3] uint256[1] dividendableFlag: the flag to indicate if the payment is dividendable. 1 for yes (pay for purchase), 0 for no (pay for investment)
+   * @notice 支付一些现金以转移代币（可用作商品币）
+   * @param ADDRESS_2DARRAY[0] address[] toAddressArray: 需要转移代币到的地址数组
+   * @param UINT256_2DARRAY[0] uint256[] tokenClassArray: 需要转移代币的代币类别索引数组
+   * @param UINT256_2DARRAY[1] uint256[] amountArray: 需要转移的代币数量数组
+   * @param UINT256_2DARRAY[2] uint256[] priceArray: 每个代币类别转移的价格
+   * @ param UINT256_2DARRAY[3] uint256[1] dividendableFlag: 标志，指示支付是否可分红。1为是（支付购买），0为否（支付投资）
    * ID:21
    */
   BATCH_PAY_TO_TRANSFER_TOKENS,
 
   /**
-   * @notice Add an array of address as emergency agents
-   *  (can be used as product NFTs with a new unique token class)
-   * @param ADDRESS_2DARRAY[0] address[] The array of the address to add as emergency agents 
+   * @notice 添加一组地址作为紧急代理
+   *  (可用作具有新唯一代币类别的产品NFT)
+   * @param ADDRESS_2DARRAY[0] address[] 需要添加为紧急代理的地址数组 
    * ID:22
    */
   ADD_EMERGENCY,
 
   /**
-   * @notice withdraw cash from the contract's cash balance
-   * @param address[] addressArray: the array of the address to withdraw cash to
-   * @param uint256[] amountArray: the array of the amount of cash to withdraw
+   * @notice 从合约的现金余额中提现现金
+   * @param address[] addressArray: 需要提现现金到的地址数组
+   * @param uint256[] amountArray: 需要提现的现金数量数组
    * ID:23
    */
   WITHDRAW_CASH_TO,
 
   /**
-   * @notice Call emergency agents to handle emergency situations
-   * @param UINT256_2DARRAY[0] address[] addressArray: the array of the emergency agents index to call
+   * @notice 调用紧急代理处理紧急情况
+   * @param UINT256_2DARRAY[0] address[] addressArray: 需要调用的紧急代理索引数组
    * ID:24
    */
   CALL_EMERGENCY,
 
 
   /**
-   * @notice Call a contract with the given abi
-   * @param address contractAddress: the address of the contract to call
-   * @param bytes abi: the abi of the function to call
+   * @notice 使用给定的abi调用合约
+   * @param address contractAddress: 需要调用的合约地址
+   * @param bytes abi: 需要调用的函数的abi
    * ID:25
    */
   CALL_CONTRACT_ABI,
 
   /**
-   * @notice Pay some cash
-   * @param uint256 amount: the amount of cash to pay
-   * @param uint256 paymentType: the type of cash to pay, 0 for ethers/matic/original tokens
-   *  1 for USDT, 2 for USDC (right now only 0 is supported), 3 for DAI ...
-   * @param uint256 dividendable: the flag to indicate if the payment is dividendable, 
-   * 0 for no (pay for investment), 1 for yes (pay for purchase)
+   * @notice 支付一些现金
+   * @param uint256 amount: 需要支付的现金数量
+   * @param uint256 paymentType: 需要支付的现金类型，0为以太币/matic/原生代币
+   *  1为USDT，2为USDC（目前仅支持0），3为DAI等
+   * @param uint256 dividendable: 标志，指示支付是否可分红，
+   * 0为否（支付投资），1为是（支付购买）
    * ID:26
    */
   PAY_CASH,
 
   /**
-   * @notice Calculate the dividends and offer to token holders
-   *  by adding the dividends to the withdrawable balance of each token holder
+   * @notice 计算分红并提供给代币持有者
+   *  通过将分红添加到每个代币持有者的可提现余额中
    * 
    * ID:27
    */
   OFFER_DIVIDENDS,
 
   /**
-   * @notice Withdraw dividends from the withdrawable dividends balance
-   * @param address[] addressArray: the array of the address to withdraw dividends to
-   * @param uint256[] amountArray: the array of the amount of dividends to withdraw
+   * @notice 从可提现分红余额中提取分红
+   * @param address[] addressArray: 需要提取分红到的地址数组
+   * @param uint256[] amountArray: 需要提取的分红数量数组
    * ID:28
    */
   WITHDRAW_DIVIDENDS_TO,
 
   /**
-   * @notice Set the approval for all transfer operations by address
-   * @paran address: the address to set approval for all transfer operations
+   * @notice 设置所有转移操作的批准通过地址
+   * @paran address: 需要设置所有转移操作批准的地址
    * ID:29
    */
   SET_APPROVAL_FOR_ALL_OPERATIONS,
 
 
   /**
-   * @notice Batch Burn tokens and Refund
-   * @param UINT256_2D[0] uint256[] tokenClassArray: the array of the token class index to burn tokens from
-   * @param UINT256_2D[1] uint256[] amountArray: the array of the amount of the token to burn
-   * @param UINT256_2D[2] uint256[] priceArray: the price of each token class to burn
+   * @notice 批量销毁代币并退款
+   * @param UINT256_2D[0] uint256[] tokenClassArray: 需要从中销毁代币的代币类别索引数组
+   * @param UINT256_2D[1] uint256[] amountArray: 需要销毁的代币数量数组
+   * @param UINT256_2D[2] uint256[] priceArray: 每个代币类别销毁的价格
    * ID:30
    */
   BATCH_BURN_TOKENS_AND_REFUND,
 
   /**
-   * @notice Add storage IPFS hash to the storage list permanently
-   * @paran STRING_2DARRAY[0] address: the address to set approval for all cash withdraw operations
+   * @notice 永久地将存储IPFS哈希添加到存储列表中
+   * @paran STRING_2DARRAY[0] address: 需要设置所有现金提取操作批准的地址
    * ID:31
    */
   ADD_STORAGE_IPFS_HASH,
 
 
   /**
-   * Below are two operations than can be used during voting pending process
+   * 以下两个操作可以在投票等待过程中使用
    */
 
   /**
-   * @notice Vote for a voting pending program
-   * @param bool[] voteArray: the array of the vote for each program
+   * @notice 为投票等待的程序投票
+   * @param bool[] voteArray: 每个程序的投票数组
    * ID:32
    */
   VOTE,
 
   /**
-   * @notice Execute a program that has been voted and approved
+   * @notice 执行已经投票并获批的程序
    * ID:33
    */
   EXECUTE_PROGRAM,
 
   /**
-   * @notice Emergency mode termination. Emergency agents cannot do anything after this operation
+   * @notice 紧急模式终止。紧急代理在此操作后不能做任何事情
    * ID:34
    */
   END_EMERGENCY,
 
   /**
-   * @notice Upgrade the contract to a new contract address
-   * @param ADDRESS_2DARRAY[0][0] The address of the new contract
+   * @notice 将合约升级到新的合约地址
+   * @param ADDRESS_2DARRAY[0][0] 新合约的地址
    * ID:35
    */
   UPGRADE_TO_ADDRESS,
 
   /**
-   * @notice Accepting current DARCs to be upgraded from the old contract address
-   * @param ADDRESS_2DARRAY[0][0] The address of the old contract
+   * @notice 接受当前DARCs从旧合约地址升级
+   * @param ADDRESS_2DARRAY[0][0] 旧合约的地址
    * ID:36
    */
   CONFIRM_UPGRAED_FROM_ADDRESS,
 
   /**
-   * @notice Upgrade the contract to the latest version
+   * @notice 将合约升级到最新版本
    * ID:37
    */
   UPGRADE_TO_THE_LATEST,
 
   /**
-   * @notice Batch Pay to Trasnfer Tokens Operation
+   * @notice 批量支付转移代币操作
    * ID:38
    */
   op_BATCH_PAY_TO_TRANSFER_TOKENS
@@ -344,12 +344,12 @@ enum EnumOpcode {
 
 
 
-\section*{Appendix 2: Reference Design of Program and Operation}
+\section*{附录2：程序和操作的参考设计}
 
 \begin{spverbatim}
 
 /**
-  * The parameter(s) or operand(s) of the operation
+  * 操作的参数或操作数
   */
 struct Param {
   uint256[] UINT256_ARRAY;
@@ -364,7 +364,7 @@ struct Param {
 }
 
 /**
-  * The operation to be executed, including the operator address, the opcode and the parameters
+  * 要执行的操作，包括操作者地址、操作码和参数
   */
 struct Operation {
   address operatorAddress;
@@ -373,29 +373,29 @@ struct Operation {
 }
 
 /**
-  * The program to be executed, including the operator address and the operation array
+  * 要执行的程序，包括程序操作者地址和操作数组
   */
 struct Program {
   address programOperatorAddress;
 
   /**
-   * @notice operations: the array of the operations to be executed
+   * @notice operations: 要执行的操作数组
    */
   Operation[] operations;
 }
 
 \end{spverbatim}
 
-\section*{Appendix 3: Reference Design of Plugin}
+\section*{附录3：插件的参考设计}
 
 \begin{spverbatim}
 /** 
-  * The condition node types
+  * 条件节点类型
   */
 enum EnumConditionNodeType { UNDEFINED, EXPRESSION, LOGICAL_OPERATOR, BOOLEAN_TRUE, BOOLEAN_FALSE}
 
 /**
-  * The logical operator types
+  * 逻辑操作符类型
   */
 enum EnumLogicalOperatorType {UNDEFINED, AND, OR, NOT }
 
@@ -403,46 +403,46 @@ enum EnumLogicalOperatorType {UNDEFINED, AND, OR, NOT }
 enum EnumReturnType { 
 
   /**
-   * The default value. The plugin system will return UNDEFINED if no plugin is triggered.
-   * Both BEFORE and AFTER operation plugin system may return UNDEFINED.
+   * 默认值。如果没有插件被触发，插件系统将返回UNDEFINED。
+   * BEFORE和AFTER操作插件系统都可能返回UNDEFINED。
    */
   UNDEFINED,   
 
 
   /**
-   * The operation is approved but must be executed in sandbox to check if the operation
-   * is valid in the current machine state.
-   * Only BEFORE operation plugin system may return SANDBOX_NEEDED.
+   * 操作被批准，但必须在沙盒中执行以检查操作
+   * 在当前机器状态下是否有效。
+   * 只有BEFORE操作插件系统可能返回SANDBOX_NEEDED。
    */
   SANDBOX_NEEDED,  
 
   /**
-   * The operation is disapproved and should be rejected at this level.
-   * Both BEFORE and AFTER operation plugin system may return NO.
+   * 操作被拒绝，在此级别应该被拒绝。
+   * BEFORE和AFTER操作插件系统都可能返回NO。
    */
   NO, 
 
   /**
-   * The decision is pending and a voting item should be created at this level.
-   * Only AFTER operation plugin system may return VOTING_NEEDED.
+   * 决定待定，应在此级别创建投票项。
+   * 只有AFTER操作插件系统可能返回VOTING_NEEDED。
    */
   VOTING_NEEDED, 
 
   /**
-   * The operation is approved and should skip the sandbox check.
-   * Only BEFORE operation plugin system may return YES_AND_SKIP_SANDBOX.
+   * 操作被批准，应跳过沙盒检查。
+   * 只有BEFORE操作插件系统可能返回YES_AND_SKIP_SANDBOX。
    */
   YES_AND_SKIP_SANDBOX,
 
   /**
-   * The operation is finally approved at this level.
-   * Only AFTER operation plugin system may return YES.
+   * 操作最终在此级别被批准。
+   * 只有AFTER操作插件系统可能返回YES。
    */
   YES 
 }
 
 /**
-  * The condition node expression parameters
+  * 条件节点表达式参数
   */
 struct NodeParam {
   uint256[] UINT256_ARRAY;
@@ -454,82 +454,81 @@ struct NodeParam {
 }
 
 /**
-  * The condition node struct
+  * 条件节点结构
   */
 struct ConditionNode {
   /**
-   * current condition node index
+   * 当前条件节点索引
    */
   uint256 id;
 
   /**
-   * the type of current condition node
+   * 当前条件节点的类型
    */
   EnumConditionNodeType nodeType;
 
   /**
-   * the logic operator of the current condition node
+   * 当前条件节点的逻辑操作符
    */
   EnumLogicalOperatorType logicalOperator;
 
   /**
-   * the condition expression of the current condition node
+   * 当前条件节点的条件表达式
    */
   EnumConditionExpression conditionExpression;
 
   /**
-   * a list of the child nodes of the current condition node
+   * 当前条件节点的子节点列表
    */
   uint256[] childList;
 
   /**
-   * The array of the EXPRESSION node parameters
+   * EXPRESSION节点参数数组
    */
   NodeParam param;
 }
 
 /** 
-  * The struct of the plugin
+  * 插件结构
   */
 struct Plugin {
   /**
-   * the return type of the current condition node
+   * 当前条件节点的返回类型
    */
   EnumReturnType returnType;
 
   /**
-   * the level of restriction, from 0 to the maximum value of uint256
+   * 限制级别，从0到uint256的最大值
    */
   uint256 level;
 
   /**
-   * condition binary expression tree vector
+   * 条件二进制表达式树向量
    */
   ConditionNode[] conditionNodes;
 
   /**
-   * the voting rule id of the current plugin if the return type is VOTING_NEEDED
+   * 如果返回类型为VOTING_NEEDED，当前插件的投票规则id
    */
   uint256 votingRuleIndex;
 
   /**
-   * the plugin note
+   * 插件备注
    */
   string note;
 
   /**
-   * the boolean that indicates whether the plugin is enabled or not
+   * 指示插件是否启用的布尔值
    */
   bool bIsEnabled;
 
   /**
-   * the boolean that indicates whether the plugin is deleted or not
+   * 指示插件是否已删除的布尔值
    */
   bool bIsInitialized;
 
   /**
-   * the boolean that indicates whether the plugin is a before operation 
-   * plugin or after operation plugin
+   * 指示插件是操作前插件还是操作后插件的布尔值
    */
   bool bIsBeforeOperation;
   

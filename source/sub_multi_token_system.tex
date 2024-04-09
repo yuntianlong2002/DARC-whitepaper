@@ -1,83 +1,82 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
 
-\section{Multi-Class Token System}
+\section{多级别代币系统}
 
-Multi-class token system is the core mechanism in the DARC protocol, users can design different levels of tokens with different voting weights and dividend weights. With plugins as restrictions, the multi-class token system can be used to represent different components or assets in the organization. 
+多级别代币系统是DARC协议的核心机制，用户可以设计具有不同投票权重和分红权重的不同级别的代币。通过插件作为限制，多级别代币系统可用于代表组织中的不同组成部分或资产。
 
-\subsection{Common Stocks}
+\subsection{普通股}
 
+普通股是股份公司机制的中心元素，作为筹集资本和分配所有权的手段。普通股股东通常享有投票权，允许他们在股东会议上对重要公司决策发表意见。此外，普通股股东可能会收到分红，这是公司利润分配给股东的一部分。投票和分红的双重属性使普通股成为股东参与公司治理和财务回报的关键工具。
 
-Common stocks are a central element in the mechanism of a joint stock company, and they serve as a means to raise capital and distribute ownership. Shareholders of common stock typically enjoy voting rights, allowing them to have a say in important company decisions during shareholder meetings. Additionally, common stockholders may receive dividends, which are a portion of the company's profits distributed to shareholders. This dual aspect of voting and dividends makes common stocks a key instrument for shareholders to participate in the governance and financial returns of the company.
+如果一个代币级别被分配了1的投票权重和1的分红权重，并且DARC中的所有重要事项都必须得到该级别所有代币持有者的批准，那么这个代币级别可以被视为DARC中的普通股。
 
-If a token level is assigned a voting weight of 1 and a dividend weight of 1, and all essential matters in the DARC must be approved by all token holders at this level, then this token level can be considered equivalent to common stock in the DARC.
-
-To instantiate such a token level, one must first establish it in the By-law Script, assigning a voting weight of 1 and a dividend weight of 1. Upon the successful execution of this script, the DARC protocol will initialize a level-0 token endowed with both a voting weight and dividend weight of 1.
+要实例化这样一个代币级别，首先必须在法规脚本中建立它，分配1的投票权重和1的分红权重。成功执行此脚本后，DARC协议将初始化一个具有1的投票权重和分红权重的0级别代币。
 
 \begin{verbatim}
 batch_create_token_classes(
-    ["TOKEN_0"],   // the token symbol in string
-    [0],           // the level of token
-    [1],           // the voting weight
-    [1]            // the dividend weight
+    ["TOKEN_0"],   // 代币符号字符串
+    [0],           // 代币级别
+    [1],           // 投票权重
+    [1]            // 分红权重
 );
 \end{verbatim}
 
-Consider about the complexity of corporation affairs, two voting rules are created for different purposes:
+考虑到公司事务的复杂性，创建了两个用于不同目的的投票规则：
 
-\textbf{Voting rule 1}: To approve an operation, the following conditions must be met: there must be more than 50\% valid voting power in favor of the operation, and this voting needs to be in absolute majority mode, which means it must comprise at least 50\% of the total token voting power. The time duration for voting rule 1 is 7 days(604800 seconds). After the program is approved, the operator needs to execute the program in 1 hour(3600 seconds).
+\textbf{投票规则1}：要批准一个操作，必须满足以下条件：超过50\%的有效投票权力支持该操作，并且这次投票需要是绝对多数模式，意味着它必须包括至少50\%的总代币投票权力。投票规则1的投票时间为7天(604800秒)。程序获批后，操作者需要在1小时(3600秒)内执行程序。
 
-\textbf{Voting rule 2}: To approve an operation, the following conditions must be met: there must be more than 75\% valid voting power in favor of the operation, and this voting needs to be in relative majority mode, which means it must comprise at least 75\% of the valid voting power. The time duration for voting rule 2 is 1 day(86400 seconds). After the program is approved, the operator needs to execute the program in 1 hour(3600 seconds).
+\textbf{投票规则2}：要批准一个操作，必须满足以下条件：超过75\%的有效投票权力支持该操作，并且这次投票需要是相对多数模式，意味着它必须包括至少75\%的有效投票权力。投票规则2的投票时间为1天(86400秒)。程序获批后，操作者需要在1小时(3600秒)内执行程序。
 
-The By-law Script below shows the initialization of voting rule 1 and 2. When adding a new plugin with voting rule index 1 or 2, the plugin will make sure that when the condition is triggered and the plugin is with the highest priority, a voting process will start with the selected voting rule.
+以下是投票规则1和2的初始化法规脚本。当添加一个带有投票规则索引1或2的新插件时，插件将确保当条件被触发且插件优先级最高时，将根据选定的投票规则启动投票过程。
 
 \begin{verbatim}
 batch_add_voting_rule([
-    // add rule 1 
+    // 添加规则1
     {
-        // token level-0 is only allowed for the voting
+        // 仅允许0级别代币进行投票
         votingTokenClassList: [0], 
 
-        // approval threshold: 50%
+        // 批准门槛：50%
         approvalThresholdPercentage: 50,
 
-        // voting duration: 604800 seconds
+        // 投票持续时间：604800秒
         votingDurationInSeconds: 604800,
 
-        // execution pending duration: 3600 seconds
+        // 执行待定持续时间：3600秒
         executionPendingDurationInSeconds: 3600,
 
-        // is voting rule enabled or not: true
+        // 投票规则是否启用：是
         isEnabled: true,
 
-        // the note about the the voting rule
-        note: "This is the voting rule index 1",
+        // 关于投票规则的注释
+        note: "这是投票规则索引1",
 
-        // is absolute majority
+        // 是否是绝对多数
         bIsAbsoluteMajority: true
     },
 
-    // add rule 2
+    // 添加规则2
     {
-        // token level-0 is only allowed for the voting
+        // 仅允许0级别代币进行投票
         votingTokenClassList: [0], 
 
-        // approval threshold: 75%
+        // 批准门槛：75%
         approvalThresholdPercentage: 75,
 
-        // voting duration: 604800 seconds
+        // 投票持续时间：86400秒
         votingDurationInSeconds: 86400,
 
-        // execution pending duration: 3600 seconds
+        // 执行待定持续时间：3600秒
         executionPendingDurationInSeconds: 3600,
 
-        // is voting rule enabled or not: true
+        // 投票规则是否启用：是
         isEnabled: true,
 
-        // the note about the the voting rule
-        note: "This is the voting rule index 2",
+        // 关于投票规则的注释
+        note: "这是投票规则索引2",
 
-        // is absolute majority
+        // 是否是绝对多数
         bIsAbsoluteMajority: false
     }
 ]);
@@ -85,24 +84,24 @@ batch_add_voting_rule([
 \end{verbatim}
 
 
-\subsection{Class A/B Stocks}
+\subsection{A/B类股}
 
-Class A and Class B stocks are fundamental tools in corporate finance. Class A provides voting rights and dividend advantages, typically held by founders. Class B, with limited voting rights, raises external capital while retaining control. This dual-class structure balances governance and growth needs, with implications for shareholders' decision-making and financial interests.
+A类和B类股是公司财务的基本工具。A类提供投票权和分红优势，通常由创始人持有。B类具有限制的投票权，用于在保留控制权的同时筹集外部资本。这种双重类别结构平衡了治理需求和增长需求，对股东的决策制定和财务利益有所影响。
 
-First initialize two token level: level-0 with voting weight 1 and dividend weight 1, and level-1 with voting weight 100 and dividend weight 1.
+首先初始化两个代币级别：0级别具有1的投票权重和1的分红权重，1级别具有100的投票权重和1的分红权重。
 
 \begin{verbatim}
 batch_create_token_classes(
-    ["TOKEN_0", "TOKEN_1"],   // the token symbol in string
-    [0, 1],           // the level of token
-    [1, 100],           // the voting weight
-    [1, 1]            // the dividend weight
+    ["TOKEN_0", "TOKEN_1"],   // 代币符号字符串
+    [0, 1],           // 代币级别
+    [1, 100],         // 投票权重
+    [1, 1]            // 分红权重
 );
 \end{verbatim}
 
-Next we will mint 10000 level-0 tokens and 200 level-1 tokens. This will make the total voting power of level-0 tokens as 10000, and 20000 for level-1 tokens. In this way, the total voting power of the DARC is 30000, in which 66.7\% in level-1 tokens. In this way, the co-founders and early stage investors will control the majority of the DARC for voting process which allows all level-0 and level-1 token holders.
+接下来，我们将铸造10000个0级别代币和200个1级别代币。这将使0级别代币的总投票权力为10000，1级别代币为20000。这样，DARC的总投票权力为30000，其中66.7\%在1级别代币。通过这种方式，共同创始人和早期投资者将控制DARC的大多数投票权力，允许所有0级别和1级别代币持有者参与投票过程。
 
-We assume that \texttt{addr1} and \texttt{addr2} hold 10000 level-0 tokens in total, 5000 for each, and each of \texttt{addr3}, \texttt{addr4}, \texttt{addr5} and \texttt{addr5} holds 50 tokens. First mint tokens to these addresses in By-law Script.
+我们假设\texttt{addr1}和\texttt{addr2}总共持有10000个0级别代币，每人5000个，每个\texttt{addr3}、\texttt{addr4}、\texttt{addr5}和\texttt{addr5}持有50个1级别代币。首先在法规脚本中将代币铸造给这些地址。
 
 \begin{verbatim}
 batch_mint_tokens(
@@ -112,83 +111,83 @@ batch_mint_tokens(
 );
 \end{verbatim}
 
-Next add a plugin to limit the total supply of level-0 and level-1 token as 10000 and 20000. 
+接下来添加一个插件以限制0级别和1级别代币的总供应量分别为10000和20000。
 
-\textbf{Voting Rule 1}: To approve the operation, 90\% of total voting power of both level-0 and level-1 token must vote \texttt{YES}. The voting process needs to be in the absolute majority mode. The time duration for voting rule 1 is 7 days(604800 seconds). After the program is approved, the operator needs to execute the program in 1 hour(3600 seconds).
+\textbf{投票规则1}：要批准操作，0级别和1级别代币的总投票权力的90\%必须投\texttt{YES}。投票过程需要是绝对多数模式。投票规则1的投票时间为7天(604800秒)。程序获批后，操作者需要在1小时(3600秒)内执行程序。
 
-\textbf{Before-Operation Plugin Rule 1}: If the operation is \texttt{BATCH\_MINT\_TOKENS} and the level of token mint is 0 or 1, the operation needs to be executed in the sandbox before making the decision.
+\textbf{操作前插件规则1}：如果操作是\texttt{BATCH\_MINT\_TOKENS}并且铸造的代币级别是0或1，操作需要在沙箱中执行后再做决定。
 
-\textbf{After-Operation Plugin Rule 1}: If the operation is \texttt{BATCH\_MINT\_TOKENS} and the level of token mint is 0 or 1, the operation needs to be approved by voting rule 3.
+\textbf{操作后插件规则1}：如果操作是\texttt{BATCH\_MINT\_TOKENS}并且铸造的代币级别是0或1，操作需要经过投票规则3的批准。
 
-\textbf{Before-Operation Plugin Rule 2}: If the operation is \texttt{BATCH\_DISABLE\_PLUGIN} and the index is before-operation plugin 1, before-operation plugin 2 or after-operation plugin 1, reject the operation. This plugin is with the highest priority.
+\textbf{操作前插件规则2}：如果操作是\texttt{BATCH\_DISABLE\_PLUGIN}并且索引在操作前插件1、操作前插件2或操作后插件1之前，拒绝操作。此插件具有最高优先级。
 
-In before-operation plugin 1 and after-operation plugin 1, when changing the shareholder structure by minting new level-0 or level-1 tokens, the operation needs to be approved by 90\% of the total voting power. This will prevent the level-1 shareholders from diluting the value of level-0 tokens and protect those level-0 token holders, mostly retail investors.
+在操作前插件1和操作后插件1中，当通过铸造新的0级别或1级别代币改变股东结构时，操作需要经过90\%的总投票权力的批准。这将防止1级别股东稀释0级别代币的价值，并保护那些主要是零售投资者的0级别代币持有者。
 
-The before-operation plugin 2 is a protection for the other plugins above. When any operator is trying to disable any of the three plugins, the operation will be rejected. This will permanently locked the mechanism and guarantee that the plugins cannot be disable.
+操作前插件2是对上述其他插件的保护。当任何操作者试图禁用这三个插件中的任何一个时，操作将被拒绝。这将永久锁定该机制并保证插件不能被禁用。
 
 \begin{verbatim}
 batch_add_voting_rules([
-    // add before-operation plugin 1
+    // 添加操作前插件1
     {
-        // token level-0 and level-1 are allowed for the voting
+        // 允许0级别和1级别代币进行投票
         votingTokenClassList: [0, 1], 
 
-        // approval threshold: 90%
+        // 批准门槛：90%
         approvalThresholdPercentage: 90,
 
-        // voting duration: 604800 seconds
+        // 投票持续时间：604800秒
         votingDurationInSeconds: 604800,
 
-        // execution pending duration: 3600 seconds
+        // 执行待定持续时间：3600秒
         executionPendingDurationInSeconds: 3600,
 
-        // is voting rule enabled or not: true
+        // 投票规则是否启用：是
         isEnabled: true,
 
-        // the note about the the voting rule
-        note: "This is the voting rule 1(index 0)",
+        // 关于投票规则的注释
+        note: "这是投票规则1（索引0）",
 
-        // is absolute majority
+        // 是否是绝对多数
         bIsAbsoluteMajority: true
     },
 ]);
 \end{verbatim}
 
-Then add three plugins to the DARC. 
+然后向DARC添加三个插件。
 \begin{verbatim}
 batch_add_and_enable_plugins([
-    // adding before-operation plugin with index 0
+    // 添加操作前插件，索引0
     {
-        returnType: SANDBOX_NEEDED, // sandbox is needed
-        level: 255, // level 255
+        returnType: SANDBOX_NEEDED, // 需要沙箱
+        level: 255, // 等级255
         condition:
             operation_equals(BATCH_MINT_TOKENS) & 
             ( 
                 mint_token_class_equals(0) | mint_token_class_equals(1)
             ),
-        votingRuleIndex: 0,  // no voting rule index needed
-        note: "before-op plugin 1",
-        bIsBeforeOperation: true  // the plugin will be added as before-op
+        votingRuleIndex: 0,  // 不需要投票规则索引
+        note: "操作前插件1",
+        bIsBeforeOperation: true  // 插件将作为操作前插件添加
     },
 
-    // adding after-operation plugin with index 0
+    // 添加操作后插件，索引0
     {
-        returnType: VOTING_NEEDED, // vote is needed
-        level: 258, // level 258
+        returnType: VOTING_NEEDED, // 需要投票
+        level: 258, // 等级258
         condition:
             operation_equals(BATCH_MINT_TOKENS) & 
             ( 
                 mint_token_class_equals(0) | mint_token_class_equals(1)
             )
-        votingRuleIndex: 0,  // voting rule 1, index = 0
-        note: "after-op plugin 1",
-        bIsBeforeOperation: false  // the plugin will be added as before-op
+        votingRuleIndex: 0,  // 投票规则1，索引 = 0
+        note: "操作后插件1",
+        bIsBeforeOperation: false  // 插件将作为操作前插件添加
     },
 
-    // adding before-operation plugin 1
+    // 添加操作前插件1
     {
-        returnType: NO, // reject
-        level: 257, // level 257
+        returnType: NO, // 拒绝
+        level: 257, // 等级257
         condition:
             operation_equals(BATCH_DISABLE_PLUGIN) & 
             ( 
@@ -196,45 +195,45 @@ batch_add_and_enable_plugins([
                 disable_before_op_plugin_index_equals(1) |
                 disable_after_op_plugin_index_equals(0)
             )
-        votingRuleIndex: 0,  // no voting rule index needed
-        note: "before-op plugin 2",
-        bIsBeforeOperation: true  // the plugin will be added as before-op
+        votingRuleIndex: 0,  // 不需要投票规则索引
+        note: "操作前插件2",
+        bIsBeforeOperation: true  // 插件将作为操作前插件添加
     }
 ]);
 \end{verbatim}
 
-\subsection{Non-Voting Stocks}
+\subsection{优先股}
 
-Non-voting stock, also known as preferred stock, is an ownership stake in a corporation that lacks voting rights but offers financial benefits like dividend priority, liquidation preference, and stability. It can be convertible or redeemable and is favored for its steady income. However, it provides no say in company decisions, making it a choice for income-focused investors seeking capital preservation with limited control over corporate matters. In the DARC protocol, when a token is initialized with a dividend weight of 1 and a voting weight of 0, it can be classified as non-voting shares.
+优先股，也称为非投票股，是一种在公司中不享有投票权但提供财务利益如分红优先权、清算优先权和稳定性的所有权份额。它可以是可转换的或可赎回的，并且因其稳定的收入而受到青睐。然而，它不提供对公司决策的发言权，使其成为寻求资本保值并对公司事务有限控制的收入型投资者的选择。在DARC协议中，当一个代币被初始化为具有1的分红权重和0的投票权重时，它可以被归类为非投票股。
 
-\subsection{Stocks with Stamp Duty}
+\subsection{带印花税的股票}
 
-Stocks with stamp duty are securities subject to a government tax, known as a ``stamp duty'', when they are bought or sold. This tax is applied to various financial instruments, including stocks and bonds, and is typically paid by the buyer or seller, depending on local regulations. People pay stamp duty when trading stocks because it serves as a source of government revenue and can also act as a tool to regulate financial markets and discourage excessive trading. The specific reasons and rates for stamp duty can vary by jurisdiction.
+带印花税的股票是在购买或出售时需缴纳政府税收的证券，这种税收称为“印花税”。这种税适用于各种金融工具，包括股票和债券，通常由买方或卖方支付，具体取决于当地规定。人们在交易股票时支付印花税是因为它作为政府收入的来源，也可以作为调节金融市场和抑制过度交易的工具。印花税的具体原因和税率因地区而异。
 
-In the DARC protocol, we have the capability to create a mechanism that compels token holders to pay a transaction fee referred to as ``stamp duty'' when transferring tokens of varying levels. For instance, we can designate level-0 tokens as the standard stocks within the DARC protocol, with a fixed stamp duty of 1000 wei applied to each token transfer.
+在DARC协议中，我们有能力创建一个机制，强制代币持有者在转让不同级别的代币时支付交易费，称为“印花税”。例如，我们可以将0级别的代币指定为DARC协议中的标准股票，每次代币转移应用固定的1000 wei印花税。
 
-First, we must implement a plugin to disable all \texttt{BATCH\_TRANSFER\_TOKENS} operations when the token being transferred belongs to level-0. Next, we should develop a plugin that restricts the transfer of level-0 tokens exclusively through the \texttt{BATCH\_PAY\_TO\_MINT\_TOKENS} operation, provided each token's transaction fee is greater than or equal to 1000 wei. Additionally, users are required to set the \texttt{dividendable} flag of the \texttt{BATCH\_PAY\_TO\_MINT\_TOKENS} operation to 0 (false), ensuring that the transaction fee (stamp duty) will not be considered as dividendable revenue for the DARC.
+首先，我们必须实现一个插件来禁用所有\texttt{BATCH\_TRANSFER\_TOKENS}操作，当被转让的代币属于0级别时。接下来，我们应该开发一个插件，仅通过\texttt{BATCH\_PAY\_TO\_MINT\_TOKENS}操作限制转让0级别的代币，前提是每个代币的交易费大于或等于1000 wei。此外，用户需要将\texttt{BATCH\_PAY\_TO\_MINT\_TOKENS}操作的\texttt{dividendable}标志设置为0（假），确保交易费（印花税）不会被视为DARC的分红收入。
 
 \begin{verbatim}
 batch_add_and_enable_plugins([
-    // adding before-operation plugin 1: disable trasnfer tokens for level-0 tokens
+    // 添加操作前插件1：禁用0级别代币的转让
     {
-        returnType: NO, // reject
-        level: 255, // level 255
+        returnType: NO, // 拒绝
+        level: 255, // 等级255
         condition:
             operation_equals(BATCH_TRANSFER_TOKENS) & 
               transfer_tokens_level_equals(0)
-        votingRuleIndex: 0,  // no voting rule index needed
-        note: "disable trasnfer tokens for level-0 tokens",
-        bIsBeforeOperation: true  // the plugin will be added as before-op
+        votingRuleIndex: 0,  // 不需要投票规则索引
+        note: "禁止转让0级别代币",
+        bIsBeforeOperation: true  // 插件将作为操作前插件添加
     },
 
-    // adding before-operation plugin 2: 
-    // allow pay to transfer tokens for level-0 tokens, 
-    // with the transaction fee >= 1000 wei per token
+    // 添加操作前插件2： 
+    // 允许支付转让0级别代币，
+    // 每个代币的交易费 >= 1000 wei
     {
-        returnType: YES_AND_SKIP_SANDBOX, // allow and skip sandbox
-        level: 256, // level 256
+        returnType: YES_AND_SKIP_SANDBOX, // 允许并跳过沙箱
+        level: 256, // 等级256
         condition:
             operation_equals(BATCH_PAY_TO_TRANSFER_TOKENS) & 
             ( 
@@ -242,83 +241,79 @@ batch_add_and_enable_plugins([
                 transaction_fee_per_token_GE(1000)   &
                 pay_to_trasnfer_tokens_dividendable_flag_equals(0)
             )
-        votingRuleIndex: 0,  // no voting rule index needed
-        note: "allow pay to transfer level-0 token with transaction fee 
-              > 1000 and dividendable flag 0",
-        bIsBeforeOperation: true  // the plugin will be added as before-op
+        votingRuleIndex: 0,  // 不需要投票规则索引
+        note: "允许支付转让0级别代币，交易费 > 1000 且分红标志为0",
+        bIsBeforeOperation: true  // 插件将作为操作前插件添加
     }
 ]);
 \end{verbatim}
 
-\subsection{Board of Directors}
+\subsection{董事会}
 
-In the realm of DAOs, decisions are typically reached through voting using governance tokens. However, this process can become sluggish and inefficient when involving thousands of token holders in each decision. Furthermore, the absence of regulations or predefined rules for the pending execution of proposal smart contracts means that approved votes can potentially authorize a wide array of actions within the DAO.
+在DAOs中，通常通过使用治理代币进行投票来达成决策。然而，当每个决策都涉及成千上万的代币持有者时，这个过程可能变得缓慢且低效。此外，缺乏对待执行提案智能合约的规定或预定义规则意味着，批准的投票可以潜在地授权DAO内进行广泛的行动。
 
-Contrastingly, in traditional joint-stock companies, day-to-day operations and affairs are overseen by a Board of Directors, rather than relying on decision-making by all shareholders. Boards of Directors are known for their efficiency, driven by their expertise, strategic acumen, rapid decision-making capabilities, and their ability to maintain stability and consistency in corporate governance. While shareholder voting remains vital for accountability and representation, the Board system offers a structured and informed approach to decision-making, ensuring that the company's long-term interests are thoughtfully prioritized and effectively managed.
+相比之下，在传统的股份公司中，日常运营和事务是由董事会而不是依靠所有股东的决策来监督的。董事会以其专业知识、战略眼光、快速决策能力以及维护公司治理稳定性和一致性而著称。虽然股东投票对于问责制和代表性至关重要，但董事会制度提供了一个结构化和见多识广的决策方法，确保公司的长期利益得到周到的优先考虑和有效管理。
 
+以下是一个示例，展示了DARC Y实验如何使用多级别代币系统设计其董事会。存在四种类型的代币，每种都在组织内扮演着独特的特性和角色，如表 \ref{table:3} 所示。
 
-Below is an example of how the DARC Y experiment designs its board of directors using a multi-level token system. There are four types of tokens, each with its unique characteristics and roles within the organization, as illustrated in Table \ref{table:3}.
+\textbf{0级别（A类代币）}：这些代币总供应量为400，拥有1的投票权重和1的分红权重。它们可能代表DARC Y协议中的普通利益相关者。
 
-\textbf{Level 0 (Class A Token)}: These tokens, with a total supply of 400, possess both voting and dividend weights of 1. They likely represent common stakeholders within the DARC Y protocol.
+\textbf{1级别（B类代币）}：B类代币的总供应量为60，拥有10的显著投票权重，使其在决策中具有影响力。它们还具有1的分红权重，暗示着可能的收入分配份额。
 
-\textbf{Level 1 (Class B Token)}: With a total supply of 60, Class B Tokens hold a substantial voting weight of 10, making them influential in decision-making. They also carry a dividend weight of 1, implying a potential share in revenue distribution.
+\textbf{2级别（独立董事）}：只有一个独立董事代币，设计上没有投票权重和分红权重，表明其在治理结构中的独特角色。
 
-\textbf{Level 2 (Independent Director)}: There is only one Independent Director token, designed with no voting or dividend weight, suggesting a unique role in the governance structure.
-
-\textbf{Level 3 (Board of Directors)}: Comprising five tokens, the Board of Directors holds a voting weight of 1 but lacks dividend weight, indicating its primary function in decision-making.
+\textbf{3级别（董事会）}：董事会由五个代币组成，具有1的投票权重但没有分红权重，表明其在决策中的主要功能。
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{||c c c c c||} 
  \hline
- Level & Name & Total Supply & Voting Weight & Dividend Weight \\ [0.5ex] 
+ 级别 & 名称 & 总供应量 & 投票权重 & 分红权重 \\ [0.5ex] 
  \hline\hline
 
- 0 & Class A Token & 400 & 1 & 1 \\
- 1 & Class B Token & 60 & 10 & 1 \\
- 2 & Independent Director & 1 & 0 & 0 \\
- 3 & Board of Directors & 5 & 1 & 0 \\
+ 0 & A类代币 & 400 & 1 & 1 \\
+ 1 & B类代币 & 60 & 10 & 1 \\
+ 2 & 独立董事 & 1 & 0 & 0 \\
+ 3 & 董事会 & 5 & 1 & 0 \\
  \hline
 \end{tabular}
-\caption{A structure of token distribution in DARC Y}
+\caption{DARC Y中的代币分配结构}
 \label{table:3}
 \end{table}
 
+以下是设计董事会机制的一些指导原则：
 
-Here are some guiding principles for designing the Board of Directors mechanism:
+\textbf{原则1}：董事会应由最多5名成员组成，所有董事会决策必须得到超过2/3成员的批准。
 
-\textbf{Principle 1}: The Board of Directors should consist of a maximum of 5 members, and all board decisions must receive approval from more than 2/3 of its members.
+\textbf{原则2}：如果一个地址持有超过2/3的0级别代币，并且不持有任何1级别、2级别或3级别代币，它可以代表零售投资者的利益，并可能被选为A类董事会成员。如果没有任何地址持有超过2/3的这些代币，董事会将没有A类代表。
 
-\textbf{Principle 2}: If an address holds over 2/3 of the Class A tokens, it can represent the interests of retail investors and may be selected as a Class A board member. In the absence of any address holding over 2/3 of these tokens, there will be no Class A representative on the board.
+\textbf{原则3}：董事会应始终包括一名独立董事，独立董事有权选择其继任者。不允许将独立董事从董事会中移除。
 
-\textbf{Principle 3}: The Board of Directors should always include one independent director, who has the option to appoint their successor. The removal of the independent director from the board is not permitted.
+\textbf{原则4}：董事会应由最多3名B类董事会成员组成，允许任何持有超过5\% B类代币的地址添加。现有董事会成员可以提名B类董事会成员，需得到至少2/3所有董事会成员的批准。
 
-\textbf{Principle 4}: The board should comprise a maximum of 3 Class B board members, with the option to add any address holding more than 5\% of the Class B tokens. Existing board members can nominate a Class B board member, subject to approval by at least 2/3 of all board members.
+\textbf{原则5}：现有董事会成员有权提议移除B类董事会成员。这样的提案可以在以下条件下获批：（1）被移除的地址持有的B类代币数量小于或等于总供应量的5\%，或（2）该地址不持有超过2/3的0级别代币总供应量或独立董事代币，并且提案获得超过2/3的董事会投票权力的支持。
 
-\textbf{Principle 5}: Existing board members have the authority to propose the removal of a Class B board member. Such a proposal can be approved under the following conditions: (1) The address to be removed holds a quantity less than or equal to 5\% of the total supply of Class B tokens, or (2) The address does not possess more than 2/3 of the total supply of Class A tokens or the independent director token, and the proposal garners more than 2/3 of the voting power within the Board of Directors.
+\textbf{原则6}：A类代币董事、B类代币董事和独立董事应保持独立于代币持有量。这意味着（1）A类代币董事只能持有A类代币和董事会代币，禁止持有B类代币或独立董事代币；（2）B类代币董事仅允许持有B类代币和董事会代币，不得持有A类代币或独立董事代币；（3）独立董事只允许持有独立董事代币。
 
-\textbf{Principle 6}: Class A Token directors, Class B Token directors, and the independent director should maintain independence from token holdings. This means that (1) Class A Token directors may only possess Class A tokens and Board of Directors tokens, and they are prohibited from holding Class B tokens or independent director tokens; (2) Class B Token directors may exclusively hold Class B tokens and Board of Directors tokens, refraining from ownership of Class A tokens or independent director tokens; and (3) The independent director is solely allowed to hold the independent director token.
+接下来，我们将设计以下插件以实现上述定义的规则和流程：
 
-Next, we will design the following plugins to implement the rules and processes defined above:
+\textbf{操作前插件规则1}：如果操作者地址持有超过2/3的0级别代币，并且不持有任何1级别、2级别或3级别代币，它可以为自己铸造1个3级别代币而无需沙箱检查。此插件规则用于提名A类代币董事会成员。
 
-\textbf{Before-Operation Plugin Rule 1}: If an operator address holds more than 2/3 of the level-0 tokens and does not hold any level-1, level-2, or level-3 tokens, it can mint one level-3 token to itself without requiring a sandbox check. This plugin rule is designed for the nomination of Class A token board members.
+\textbf{操作前插件规则2}：当操作者地址打算将2级别代币转让给另一个目标地址，且目标地址不持有任何0级别、1级别或3级别代币时，此操作可以在不需要沙箱检查的情况下获批。此插件便于独立董事职位的转让。
 
-\textbf{Before-Operation Plugin Rule 2}: When an operator address intends to transfer a level-2 token to another target address, and the target address does not hold any level-0, level-1, or level-3 tokens, this operation can be approved without a sandbox check. This plugin facilitates the transfer of the independent director position.
+\textbf{操作前插件规则3}：在情况下，操作者地址持有1个2级别代币和0个3级别代币并希望为自己铸造一个3级别代币，此操作可以在不需要沙箱检查的情况下获批。此插件用于提名独立董事。
 
-\textbf{Before-Operation Plugin Rule 3}: In cases where an operator address holds 1 level-2 token and 0 level-3 tokens and wishes to mint a level-3 token for itself, this operation can be approved without any sandbox check. This plugin serves the purpose of nominating an independent director.
+\textbf{操作前插件规则4}：涉及铸造或销毁2级别代币的操作需要被拒绝。此插件限制独立董事的数量。
 
-\textbf{Before-Operation Plugin Rule 4}: Operations involving the minting or burning of level-2 tokens need to be rejected. This plugin restricts the number of independent directors.
+\textbf{操作前插件规则5}：如果操作者地址打算为目标地址铸造1个3级别代币，且目标地址持有超过5\%的1级别代币总供应量，并且操作者地址持有1个3级别代币，此操作必须进行沙箱检查。此插件用于提名B类代币董事会成员。
 
-\textbf{Before-Operation Plugin Rule 5}: If an operator address intends to mint 1 level-3 token and the target address holds more than 5\% of the total supply of level-1 tokens, and the operator address holds 1 level-3 token, this operation must undergo a sandbox check. This plugin is utilized for the nomination of Class B token board members.
+\textbf{操作前插件规则6}：如果操作者地址打算从目标地址销毁一个3级别代币，且目标地址持有的0级别代币总供应量小于或等于2/3，持有的1级别代币小于或等于5\%，且拥有0个2级别代币，此操作可以在不需要沙箱检查的情况下获批。此插件便于移除不合格的董事会成员。
 
-\textbf{Before-Operation Plugin Rule 6}: If an operator address intends to burn a level-3 token from a target address, and the target address holds less than or equal to 2/3 of the total supply of level-0 tokens, holds less than or equal to 5\% of level-1 tokens, and has 0 level-2 tokens, this operation can be approved without a sandbox check. This plugin facilitates the removal of unqualified board members.
+\textbf{操作前插件规则7}：如果操作者地址打算从目标地址销毁一个3级别代币，且目标地址持有的0级别代币总供应量小于或等于2/3，持有的1级别代币超过5\%，且拥有0个2级别代币，并且操作者地址至少持有1个3级别代币，此操作必须进行沙箱检查。此插件用于移除B类代币董事会成员。
 
-\textbf{Before-Operation Plugin Rule 7}: If an operator address intends to burn a level-3 token from a target address, and the target address holds less than or equal to 2/3 of the total supply of level-0 tokens, holds more than 5\% of level-1 tokens, and has 0 level-2 tokens, and the operator address possesses at least 1 level-3 token, this operation must undergo a sandbox check. This plugin is employed for the removal of Class B token board members.
+\textbf{操作后插件规则1}：如果操作者地址打算从目标地址销毁一个3级别代币，且目标地址持有的0级别代币总供应量小于或等于2/3，持有的1级别代币超过5\%，拥有0个2级别代币，并且操作者地址至少持有1个3级别代币，此操作必须通过投票规则1进行投票。此次投票涉及所有董事会成员，需要绝对多数模式，批准率超过66\%。此插件用于B类董事会成员选举。
 
-
-\textbf{After-Operation Plugin Rule 1}: If an operator address intends to burn a level-3 token from a target address, and the target address holds less than or equal to 2/3 of the total supply of level-0 tokens, holds more than 5\% of level-1 tokens, has 0 level-2 tokens, and the operator address possesses at least 1 level-3 token, this operation must undergo a vote by voting rule 1. This vote involves all board members and requires an absolute majority mode, with an approval rate exceeding 66\%. This plugin is utilized for Class B board member elections.
-
-And next are the plugins implemented in the By-law Script.
+接下来是法规脚本中实现的插件。
 
 \begin{verbatim}
 const plugin_before_op_1 = {
@@ -332,7 +327,7 @@ const plugin_before_op_1 = {
                & operator_owns_num_of_token(2, 0)
                & operator_mint_to_itself() ,
     votingRuleIndex: 0, 
-    note: "before op 1",
+    note: "操作前插件1",
     bIsBeforeOperation: true  
 },
 
@@ -342,7 +337,7 @@ const plugin_before_op_2 = {
     condition: operation_equals(BATCH_TRANSFER_TOKENS)
                & transfer_token_level_equals(2) ,
     votingRuleIndex: 0, 
-    note: "before op 2",
+    note: "操作前插件2",
     bIsBeforeOperation: true  
 },
 
@@ -354,7 +349,7 @@ const plugin_before_op_3 = {
                & number_of_token_mint_equals(1) 
                & level_of_token_mint_equals(3) ,
     votingRuleIndex: 0, 
-    note: "before op 3",
+    note: "操作前插件3",
     bIsBeforeOperation: true  
 },
 
@@ -367,7 +362,7 @@ const plugin_before_op_4 = {
                & level_of_token_mint_equals(2)) ,
 
     votingRuleIndex: 0, 
-    note: "before op 4",
+    note: "操作前插件4",
     bIsBeforeOperation: true  
 },
 
@@ -380,7 +375,7 @@ const plugin_before_op_5 = {
                & operator_owns_num_of_tokens_equals(3,1)
                & batch_mint_tokens_target_address_ownes_num_of_tokens_greater(1,12),
     votingRuleIndex: 0, 
-    note: "before op 5",
+    note: "操作前插件5",
     bIsBeforeOperation: true  
 },
 
@@ -393,7 +388,7 @@ const plugin_before_op_6 = {
                & batch_burn_token_target_address_owns_num_of_tokens_LE(0, 267)
                & batch_burn_token_target_address_owns_num_of_tokens_equals(2,0),
     votingRuleIndex: 0, 
-    note: "before op 6",
+    note: "操作前插件6",
     bIsBeforeOperation: true  
 },
 
@@ -406,7 +401,7 @@ const plugin_before_op_7 = {
                & batch_burn_token_target_address_owns_num_of_tokens_LE(0, 256)
                & batch_burn_token_target_address_owns_num_of_tokens_equals(2,0),
     votingRuleIndex: 0, 
-    note: "before op 7",
+    note: "操作前插件7",
     bIsBeforeOperation: true  
 },
 
@@ -420,7 +415,7 @@ const plugin_after_op_1 = {
                & batch_burn_token_target_address_owns_num_of_tokens_equals(2,0) 
                & operator_ownes_num_of_tokens_equals(3,1),
     votingRuleIndex: 1, 
-    note: "after op 1",
+    note: "操作后插件1",
     bIsBeforeOperation: false  
 },
 
@@ -436,16 +431,15 @@ batch_add_and_enable_plugins([
 ]);
 \end{verbatim}
 
-\subsection{Corporate Bonds}
+\subsection{公司债券}
 
+公司债券是企业为筹集资金而发行的债务证券。投资者向公司借出资金，以换取定期利息支付和到期时本金的返还。它们为公司提供了筹集资本的手段，并为投资者提供了可预测的收入来源。
 
-Company bonds are debt securities issued by corporations to raise funds. Investors lend money to the company in exchange for periodic interest payments and the return of their principal amount at maturity. They provide companies with a means to secure capital for various purposes and offer investors a predictable income stream.
+在DARC协议的背景下，\texttt{BATCH\_PAY\_TO\_MINT\_TOKENS}和\texttt{BATCH\_BURN\_TOKENS\_AND\_REFUND}命令便于在特定时间框架内以指定价格购买和赎回债券代币，使任何地址都可进行购买。购买和退款这些债券代币的两条规则如下：
 
-In the context of the DARC protocol, the commands \texttt{BATCH\_PAY\_TO\_MINT\_TOKENS} and \\ \texttt{BATCH\_BURN\_TOKENS\_AND\_REFUND} facilitate the creation of bond tokens available for purchase by any address during a specified time frame, with a designated price for both acquisition and redemption. Two rules govern the buying and refunding of these bond tokens:
+\textbf{规则1}：在2020年1月1日至2020年2月1日期间，任何地址都可以使用\texttt{BATCH\_PAY\_TO\_MINT\_TOKENS}以每个代币10000 wei的价格购买不超过100个债券代币(2级别)。债券代币的总供应量不得超过10000。
 
-\textbf{Rule 1}: Between January 1, 2020, and February 1, 2020, any address can purchase no more than 100 bond tokens(level-2) using \texttt{BATCH\_PAY\_TO\_MINT\_TOKENS} at a rate of 10,000 wei per token. The total supply of bond tokens should not exceed 10000.
-
-\textbf{Rule 2}: Addresses have the option to redeem bond tokens at a rate of 15000 wei per token using \texttt{BATCH\_BURN\_TOKENS\_AND\_REFUND} after January 1, 2030.
+\textbf{规则2}：地址有权使用\texttt{BATCH\_BURN\_TOKENS\_AND\_REFUND}以每个代币15000 wei的价格在2030年1月1日后赎回债券代币。
 
 \begin{verbatim}
 batch_add_and_enable_plugins([
@@ -456,9 +450,9 @@ batch_add_and_enable_plugins([
                    & pay_to_mint_tokens_price_per_token_equals(10000)
                    & timestamp_greater(1577858400) // 2020-01-01-0-0-0
                    & timestamp_less(1580536800) // 2020-02-01-0-0-0
-                   & pay_to_mint_tokens_level_equals(2) // level of token
-                   & number_of_token_pay_to_mint_LE(100) // number to mint
-                   & total_number_to_tokens_LE(2,99900), // total token supply
+                   & pay_to_mint_tokens_level_equals(2) // 代币级别
+                   & number_of_token_pay_to_mint_LE(100) // 铸造数量
+                   & total_number_to_tokens_LE(2,99900), // 总代币供应量
         votingRuleIndex: 0, 
         note: "",
         bIsBeforeOperation: true  
@@ -469,7 +463,7 @@ batch_add_and_enable_plugins([
         condition: operation_equals(BATCH_BURN_TOKENS_AND_REFUND)
                    & burn_tokens_and_refund_price_per_token_equals(15000)
                    & timestamp_GE(1893477600) // 2030-01-01-0-0-0
-                   & burn_tokens_and_refund_level_equals(2), // level of token
+                   & burn_tokens_and_refund_level_equals(2), // 代币级别
         votingRuleIndex: 0, 
         note: "",
         bIsBeforeOperation: true  
@@ -477,11 +471,10 @@ batch_add_and_enable_plugins([
 ]);
 \end{verbatim}
 
-\subsection{Product Tokens and Non-Fungible Tokens}
+\subsection{产品代币和非同质化代币}
 
-When we set both voting weight and dividend weight to 0, and forcefully require operators to mint tokens at a specific price, these tokens can be considered as product tokens representing paid products or services of the DARC instance.
+当我们将投票权重和分红权重都设置为0，并强制要求操作者以特定价格铸造代币时，这些代币可以被视为代表DARC实例的付费产品或服务的产品代币。
 
-When we further configure several levels of tokens to allow only one pay-to-mint one token per transaction, prohibit minting and burning operations, and disallow additional pay-to-mint transactions if one token of that level already exists. Simultaneously, we permit holders of these tokens to freely transfer them to other addresses, at this point, these level-specific tokens can be considered as NFTs (Non-Fungible Tokens) \cite{ethereumERC721NonFungible}. NFTs can be used and considered as unique digital assets that represent ownership or proof of authenticity for specific items or content in the DARC protocol.
-
+当我们进一步配置几个级别的代币以允许每笔交易仅支付铸造一个代币，禁止铸造和销毁操作，并禁止在某一级别已存在一个代币的情况下进行额外的支付铸造交易。同时，我们允许这些代币的持有者自由将它们转让给其他地址，此时，这些特定级别的代币可以被视为NFTs（非同质化代币）\cite{ethereumERC721NonFungible}。NFTs可以用作并被视为代表特定物品或内容的所有权或真实性证明的独特数字资产，在DARC协议中使用。
 
 \end{document}

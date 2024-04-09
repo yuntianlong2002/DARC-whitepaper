@@ -1,86 +1,86 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
 
-\section{Plugins}
+\section{插件}
 
-\subsection{Design of Plugins}
+\subsection{插件的设计}
 
-Plugin is the law in the DARC Protocol, and all programs and operations within DARC must adhere to the restrictions imposed by all plugins. For an individual plugin, it follows the logic outlined in the pseudo code below:
+插件是DARC协议中的法律，DARC内的所有程序和操作都必须遵守所有插件施加的限制。对于单个插件，它遵循下面伪代码中概述的逻辑：
 
 \begin{verbatim}
 if plugin.condition:
     return plugin.returnType
 \end{verbatim}
 
-For the DARC protocol, the main difference between before-operation plugins and after-operation plugins lies in their return types. For before-operation plugins, as they determine whether a certain operation should be executed directly, rejected outright, or entered into a sandbox, they have three distinct return types that serve as their final decisions:
+对于DARC协议，操作前插件和操作后插件之间的主要区别在于它们的返回类型。对于操作前插件，由于它们决定某个操作是否应该直接执行、直接拒绝或进入沙箱，因此它们有三种不同的返回类型作为它们的最终决定：
 
 \begin{enumerate}
-    \item \texttt{NO}. When the condition of a before-operation plugin is triggered, the plugin's decision for that operation is \texttt{NO}. This decision indicates that the plugin believes the operation violates its rules, and therefore, it is rejected outright before entering the sandbox for execution.
+    \item \texttt{NO}。当操作前插件的条件被触发时，插件对该操作的决定是\texttt{NO}。这个决定表明插件认为操作违反了它的规则，因此在进入沙箱执行之前就被直接拒绝。
 
-    \item \texttt{SANDBOX\_NEEDED}. When the condition of a before-operation plugin is triggered, the plugin's decision for that operation is \texttt{SANDBOX\_NEEDED}. This decision indicates that the plugin cannot determine whether the operation should be accepted or rejected. The plugin is aware that the operation needs to be evaluated in the sandbox by after-operation plugins, and thus, the decision is made to let the operation proceed to the sandbox for further evaluation.
+    \item \texttt{SANDBOX\_NEEDED}。当操作前插件的条件被触发时，插件对该操作的决定是\texttt{SANDBOX\_NEEDED}。这个决定表明插件无法确定操作应该被接受还是被拒绝。插件知道需要在沙箱中由操作后插件评估该操作，因此做出让操作进入沙箱以进行进一步评估的决定。
 
-    \item \texttt{YES\_AND\_SKIP\_SANDBOX}. When the condition of a before-operation plugin is triggered, the plugin's decision for that operation is \texttt{YES\_AND\_SKIP\_SANDBOX}. This decision indicates that the plugin has determined that the operation should be approved and does not require execution in the sandbox. Therefore, the operation can proceed directly without going through the sandbox.
+    \item \texttt{YES\_AND\_SKIP\_SANDBOX}。当操作前插件的条件被触发时，插件对该操作的决定是\texttt{YES\_AND\_SKIP\_SANDBOX}。这个决定表明插件已经确定操作应该被批准，并且不需要在沙箱中执行。因此，操作可以直接进行，无需经过沙箱。
 \end{enumerate}
 
 
 
-For after-operation plugins, since the program has been executed in the sandbox and voting can commence, these plugins can have three return types as their final decisions:
+对于操作后插件，由于程序已在沙箱中执行并且可以开始投票，这些插件也可以有三种返回类型作为它们的最终决定：
 
 \begin{enumerate}
-    \item \texttt{NO}. When the condition of an after-operation plugin is triggered, the plugin's decision for the operation is \texttt{NO}. This decision indicates that the plugin believes the operation violates its rules and should be rejected outright.
+    \item \texttt{NO}。当操作后插件的条件被触发时，插件对操作的决定是\texttt{NO}。这个决定表明插件认为操作违反了它的规则，应该被直接拒绝。
 
-    \item \texttt{VOTING\_NEEDED}. When the condition of an after-operation plugin is triggered, the plugin's decision for the operation is {VOTING\_NEEDED}. This decision indicates that the plugin believes the operation requires a vote, and the operation needs to initialize a voting item based on the voting rule specified by this plugin.
+    \item \texttt{VOTING\_NEEDED}。当操作后插件的条件被触发时，插件对操作的决定是\texttt{VOTING\_NEEDED}。这个决定表明插件认为操作需要投票，并且操作需要根据该插件指定的投票规则初始化投票项。
 
-    \item \texttt{YES}. When the condition of an after-operation plugin is triggered, the plugin's decision for the operation is \texttt{YES}. This decision indicates that the plugin believes, based on its rules, the operation should be allowed to proceed.
+    \item \texttt{YES}。当操作后插件的条件被触发时，插件对操作的决定是\texttt{YES}。这个决定表明插件根据它的规则认为操作应该被允许进行。
 \end{enumerate}
 
 
-Each plugin has a condition node array, where condition nodes are stored in sequence. The root node corresponds to the node at index 0, which is the first node. The condition node array follows the following principles:
+每个插件都有一个条件节点数组，条件节点按顺序存储。根节点对应于索引0处的节点，即第一个节点。条件节点数组遵循以下原则：
 
 \begin{enumerate}
-    \item The type of each node can be a boolean operator or an expression;
-    \item For boolean operators, the type must be set as one of AND, OR, or NOT;
-    \item For AND and OR operators, at least two valid child node indices must be specified in the child node list;
-    \item For the NOT operator, a unique child node index must be specified in the child node list;
-    \item For expression nodes, valid condition expression parameters consistent with the expression must be set;
-    \item For expression nodes, the length of their child node list must be 0, meaning no child nodes are allowed.
+    \item 每个节点的类型可以是布尔运算符或表达式；
+    \item 对于布尔运算符，类型必须设置为AND、OR或NOT之一；
+    \item 对于AND和OR运算符，必须在子节点列表中指定至少两个有效的子节点索引；
+    \item 对于NOT运算符，必须在子节点列表中指定一个唯一的子节点索引；
+    \item 对于表达式节点，必须设置与表达式一致的有效条件表达式参数；
+    \item 对于表达式节点，其子节点列表的长度必须为0，意味着不允许有子节点。
 \end{enumerate}
 
-Figure \ref{fig:condition-nodes} is an example illustrating how a condition expression binary tree is serialized into a condition node array.
+图 \ref{fig:condition-nodes} 是一个例子，说明了如何将一个条件表达式二叉树序列化为条件节点数组。
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{plugin_condition_nodes.drawio.png}
-\caption{\label{fig:condition-nodes}Condition Nodes and Expression Tree}
+\caption{\label{fig:condition-nodes}条件节点和表达式树}
 \end{figure}
 
-Additionally, a plugin needs to set two parameters: one is the ``level'', representing the priority of the plugin within the entire plugin system. For the same operation, the judgment system traverses all plugins, and it is possible that at least two or more plugins are triggered. In such cases, if the levels of the plugins are different, the judgment system will consider the plugin with the higher level as the final determination.
+此外，插件需要设置两个参数：一个是``级别''，代表插件在整个插件系统中的优先级。对于同一个操作，判断系统遍历所有插件，可能至少有两个或更多插件被触发。在这种情况下，如果插件的级别不同，判断系统会将级别更高的插件视为最终决定。
 
-The other parameter is the ``voting rule index'', which points to a specific index in the voting rule array. When the final decision of a plugin is \texttt{VOTING\_NEEDED}, the plugin requests the DARC protocol to use the voting rule indicated by the voting rule index for initializing the voting item. If the return type of the plugin is not \texttt{VOTING\_NEEDED}, the voting rule index will be ignored.
-
-
-
-\subsection{Plugins and the Judgement System}
-
-For the DARC protocol, the judgment system needs to undergo two assessments: one through before-operation plugins and another after the program has run completely in the sandbox, followed by evaluation through after-operation plugins. The reason for this design is that, without a sandbox and relying solely on a set of plugins for judgment, it becomes challenging to anticipate the behavior of the program. As a result, it is not possible to protect against modifications to special states in the DARC protocol.
-
-For example, in a DARC instance where shareholder X is required to permanently hold 15\% voting rights and 10\% dividend rights, when designing a plugin, it is impossible to predict the state of the DARC instance after the execution of operations like mint tokens or burn tokens. This uncertainty poses challenges in ensuring that shareholder X maintains permanent ownership of 15\% voting rights and 10\% dividend rights. Only by running the operation in the sandbox and then re-evaluating the state of the sandbox, can such modifications be prevented.
-
-In another scenario, if there is a need to ensure that a DARC instance reserves 10000 native tokens permanently before January 1, 2035, the correct detection and prevention of operations such as paying dividends or withdrawing cash can only be guaranteed by executing these operations in the sandbox. After all operations are completed in the sandbox, the judgment system performs a second evaluation through after-operation plugins. Without a sandbox and relying solely on plugins, the design of such a mechanism would be overly complex.
-
-
-If there are only after-operation plugins and a sandbox without before-operation plugins, it would be expensive and inefficient. This is because the running cost of the sandbox is very high. It not only requires the program to run completely in the sandbox but also involves initializing the sandbox by fully replicating the internal state of the entire DARC instance. This process incurs a significant amount of gas fees.
-
-For the majority of simple operations that can be approved without the need for running in the sandbox, it is more cost-effective to have rules established directly in before-operation plugins. For example, the trading of shares between small shareholders and retail investors, customers engaging in daily transactions, board members executing routine payment operations, and employees issuing salaries and stock incentives to themselves—these numerous daily and high-frequency activities can be defined as before-operation plugins. This approach helps to save gas fees for the vast majority of daily operations.
+另一个参数是``投票规则索引''，它指向投票规则数组中的一个特定索引。当插件的最终决定是\texttt{VOTING\_NEEDED}时，插件请求DARC协议使用投票规则索引指示的投票规则来初始化投票项。如果插件的返回类型不是\texttt{VOTING\_NEEDED}，则会忽略投票规则索引。
 
 
 
-For before-operation plugins, whenever a program is submitted to the DARC protocol, the judgment system sequentially checks each operation. For each operation, the judgment system traverses each before-operation plugin and obtains a single judgment result. Finally, it aggregates the results for all operations to determine the overall result for the entire program. This decision dictates whether the program needs to run in the sandbox (\texttt{SANDBOX\_NEEDED}), be rejected outright (\texttt{NO}), or run directly without the need for the sandbox (\texttt{YES\_AND\_SKIP\_SANDBOX}). For before-operation judgment, the following rules are followed:
+\subsection{插件与判断系统}
+
+对于DARC协议，判断系统需要进行两次评估：一次通过操作前插件，另一次在程序完全在沙箱中运行后，然后通过操作后插件进行评估。这样设计的原因是，如果没有沙箱并且仅依赖一组插件进行判断，预测程序的行为将变得非常困难。因此，无法保护DARC协议中特殊状态的修改。
+
+例如，在一个DARC实例中，要求股东X永久持有15\%的投票权和10\%的分红权时，设计插件时无法预测铸造代币或销毁代币等操作执行后DARC实例的状态。这种不确定性给确保股东X永久拥有15\%的投票权和10\%的分红权带来了挑战。只有在沙箱中运行操作然后重新评估沙箱的状态，才能防止这种修改。
+
+在另一个场景中，如果需要确保一个DARC实例在2035年1月1日之前永久保留10000个原生代币，只有在沙箱中执行这些操作后，才能通过操作后插件进行第二次评估，从而确保正确检测和防止支付分红或提取现金等操作。如果没有沙箱并且仅依赖插件，设计这样的机制将过于复杂。
+
+
+如果只有操作后插件和沙箱而没有操作前插件，那将是昂贵且低效的。这是因为沙箱的运行成本非常高。它不仅需要在沙箱中完全运行程序，还涉及通过完全复制整个DARC实例的内部状态来初始化沙箱。这个过程会产生大量的Gas费用。
+
+对于大多数可以在不需要在沙箱中运行的简单操作，直接在操作前插件中建立规则更为节省成本。例如，小股东和零售投资者之间的股份交易、客户进行日常交易、董事会成员执行常规支付操作以及员工为自己发放薪水和股票激励——这些众多的日常和高频活动可以定义为操作前插件。这种方法有助于为大多数日常操作节省Gas费用。
+
+
+
+对于操作前插件，每当一个程序提交给DARC协议时，判断系统会顺序检查每个操作。对于每个操作，判断系统遍历每个操作前插件，并获得一个单一的判断结果。最后，它汇总所有操作的结果，以确定整个程序的最终结果。这个决定决定了程序是否需要在沙箱中运行（\texttt{SANDBOX\_NEEDED}）、被直接拒绝（\texttt{NO}）还是可以直接运行而不需要沙箱（\texttt{YES\_AND\_SKIP\_SANDBOX}）。对于操作前判断，遵循以下规则：
 
 \begin{enumerate}
-    \item If any operation is judged by the judgment system as \texttt{NO}, the entire program is rejected with a result of \texttt{NO}.
-    \item If none of the operations is judged by the judgment system as \texttt{NO}, and at least one operation is judged as \texttt{SANDBOX\_NEEDED}, the entire program is required to run in the sandbox, and the result is \texttt{SANDBOX\_NEEDED}.
-    \item If all operations are judged by the judgment system as \texttt{YES\_AND\_SKIP\_SANDBOX}, the entire program is approved with a result of \texttt{YES\_AND\_SKIP\_SANDBOX}, the entire program can skip the sandbox.
+    \item 如果任何操作被判断系统判定为\texttt{NO}，整个程序将以\texttt{NO}的结果被拒绝。
+    \item 如果没有任何操作被判断系统判定为\texttt{NO}，并且至少有一个操作被判定为\texttt{SANDBOX\_NEEDED}，整个程序需要在沙箱中运行，结果为\texttt{SANDBOX\_NEEDED}。
+    \item 如果所有操作都被判断系统判定为\texttt{YES\_AND\_SKIP\_SANDBOX}，整个程序将以\texttt{YES\_AND\_SKIP\_SANDBOX}的结果被批准，整个程序可以跳过沙箱。
 \end{enumerate}
 
 
@@ -89,27 +89,26 @@ For before-operation plugins, whenever a program is submitted to the DARC protoc
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{judgement_plugin_levels_before_ops.drawio.png}
-\caption{\label{fig:judgement-before-op}Judgement on program with before-operation plugins}
+\caption{\label{fig:judgement-before-op}带有操作前插件的程序判断}
 \end{figure}
 
 
-Figure \ref{fig:judgement-before-op} illustrates how individual operations within a program are judged by before-operation plugins, resulting in judgment outcomes, deciding whether the program needs approval through voting (\texttt{VOTING\_NEEDED}), should be rejected outright (\texttt{NO}), or can proceed directly (\texttt{YES}). The following rules apply to after-operation judgment:
+图 \ref{fig:judgement-before-op} 说明了程序内的单个操作如何通过操作前插件被判断，得出判断结果，决定程序是否需要通过投票批准（\texttt{VOTING\_NEEDED}）、直接拒绝（\texttt{NO}）或可以直接进行（\texttt{YES}）。对于操作后判断，遵循以下规则：
 
 \begin{enumerate}
-    \item If any operation is judged by the judgment system as \texttt{NO}, the entire program is rejected with a result of \texttt{NO}.
-    \item If none of the operations have been determined as \texttt{NO} by the judgement system, and at least one operation has been determined as \texttt{VOTING\_NEEDED}, the final judgement for the entire program is \texttt{VOTING\_NEEDED}. This program will be placed into the pending program category, and the DARC protocol must initiate the voting system to decide on approval or rejection.
-    \item If all operations are judged by the judgment system as \texttt{YES}, the entire program is approved with a result of \texttt{YES}, the entire program can be executed directly.
+    \item 如果任何操作被判断系统判定为\texttt{NO}，整个程序将以\texttt{NO}的结果被拒绝。
+    \item 如果判断系统没有将任何操作判定为\texttt{NO}，并且至少有一个操作被判定为\texttt{VOTING\_NEEDED}，整个程序的最终判断为\texttt{VOTING\_NEEDED}。这个程序将被归类为待决程序，DARC协议必须启动投票系统来决定批准或拒绝。
+    \item 如果所有操作都被判断系统判定为\texttt{YES}，整个程序将以\texttt{YES}的结果被批准，整个程序可以直接执行。
 \end{enumerate}
 
 
 \begin{figure}
     \centering
     \includegraphics[width=1\linewidth]{judgement_plugin_levels_after_ops.drawio.png}
-    \caption{\label{fig:judgement-after-op}Judgement on program with after-operation plugins}
+    \caption{\label{fig:judgement-after-op}带有操作后插件的程序判断}
 \end{figure}
 
-Figure \ref{fig:judgement-after-op} illustrates how individual operations within a program are judged by after-operation plugins, resulting in judgment outcomes.
-
+图 \ref{fig:judgement-after-op} 说明了程序内的单个操作如何通过操作后插件被判断，得出判断结果。
 
 
 \end{document}

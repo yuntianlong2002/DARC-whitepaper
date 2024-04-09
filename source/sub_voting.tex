@@ -1,135 +1,134 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
 
-\section{Voting}
+\section{投票}
 
-\subsection{Voting Process and States}
+\subsection{投票过程和状态}
 
-As shown in figure \ref{fig:FSM}, you can consider each DARC protocol as a finite-state machine (FSM) with three states:
+如图 \ref{fig:FSM} 所示，您可以将每个DARC协议视为一个有限状态机（FSM），它具有三种状态：
 
-1. Idle state: In this state, the DARC protocol can accept any program. When a program is accepted and executed, the DARC protocol transitions back to the idle state. Similarly, if a program is rejected, the DARC protocol returns to the idle state. When a program contains an operation that requires voting, the DARC protocol transitions to the voting state.
+1. 空闲状态：在此状态下，DARC协议可以接受任何程序。当程序被接受并执行后，DARC协议转回到空闲状态。同样，如果程序被拒绝，DARC协议返回到空闲状态。当程序包含需要投票的操作时，DARC协议转换到投票状态。
 
-2. Voting state: During the voting state of the DARC Protocol, all users are allowed and exclusively permitted to execute programs containing a single vote operation. If a program contains multiple operations, the program will be rejected. Similarly, if a program contains a single operation that is not a vote, the program will also be rejected. If the current vote is approved, the system will automatically transition to the execution pending state. Additionally, the voting state has a minimum time limit. If, within this time limit, the supporting votes for each voting item do not collectively exceed the defined threshold, the current voting round is considered unsuccessful, and the system will automatically return to the idle state. Only when all voting items receive approval within the specified time limit will the program be approved by the DARC protocol.
+2. 投票状态：在DARC协议的投票状态期间，所有用户被允许且只被允许执行包含单一投票操作的程序。如果程序包含多个操作，程序将被拒绝。同样，如果程序包含的单一操作不是投票，程序也将被拒绝。如果当前投票被批准，系统将自动转换到等待执行状态。此外，投票状态有一个最小时间限制。如果在此时间限制内，每个投票项的支持票数未总体超过定义的阈值，当前的投票轮被视为不成功，系统将自动返回到空闲状态。只有当所有投票项在指定时间限制内获得批准时，程序才会被DARC协议批准。
 
-3. Execution pending state: When a program is voted upon and approved by the DARC protocol, it can be executed in the execution pending state. The execution pending state also has a minimum time limit. If the program is executed within this limit, it will be successfully executed, and the system will automatically revert to the idle state. If execution does not occur within this limit, the program will fail to execute, and the DARC protocol will discard the program, automatically returning to the idle state.
+3. 等待执行状态：当一个程序被DARC协议投票并批准后，它可以在等待执行状态中被执行。等待执行状态也有一个最小时间限制。如果程序在此限制内被执行，它将被成功执行，系统将自动恢复到空闲状态。如果执行没有在此限制内发生，程序将失败，DARC协议将丢弃程序，自动返回到空闲状态。
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{finite_state_machine.drawio.large.png}
-\caption{\label{fig:FSM}The finite-state machine of DARC}
+\caption{\label{fig:FSM}DARC的有限状态机}
 \end{figure}
 
-\subsection{Voting Rules}
+\subsection{投票规则}
 
-Each voting rule is composed with following items:
+每个投票规则由以下项目组成：
 \begin{itemize}
-    \item Voting token class list: a list of token class indices that are allowed to vote for this voting item. It contains at least one valid token class index number. All tokens with indices listed in this array are considered as valid voting tokens. All token holders that holds any tokens that are included in this array are allowed to vote for this item.
-    \item Approval threshold percentage: the approval threshold in percentage. 
-    \item Boolean flag \texttt{bIsAbsoluteMajority}: a boolean flag that indicates if the voting mode is by absolute majority or relative majority.
-    \item Voting duration(in seconds): the maximum duration for this voting process in seconds. If the voting process takes more time than this parameter, the voting process will be terminated and the vote result will be set as failure.
-    \item Executing pending duration(in seconds): the maximum duration for the operator to execute an approved program after a voting process finishes in seconds. If the program is approved, the operator must execute this program before the defined duration ends; otherwise, the program will be aborted, and the DARC will be reset to the idle state.
-    \item Boolean flag \texttt{isEnabled}: a boolean flag that must be set as \texttt{True} if the voting rule is initialized and enabled successfully.
-    \item Note: a string stored in the voting rule with extra information, comments or external URLs about this voting rule.
+    \item 投票代币类别列表：允许为此投票项投票的代币类别索引列表。它包含至少一个有效的代币类别索引号。列在此数组中的所有代币都被视为有效投票代币。持有任何包含在此数组中的代币的所有代币持有者都被允许为此项投票。
+    \item 批准阈值百分比：以百分比表示的批准阈值。
+    \item 布尔标志 \texttt{bIsAbsoluteMajority}：一个布尔标志，指示投票模式是绝对多数还是相对多数。
+    \item 投票持续时间（秒）：此投票过程的最大持续时间，以秒为单位。如果投票过程超过此参数的时间，投票过程将被终止，投票结果将被设置为失败。
+    \item 执行等待持续时间（秒）：在投票过程结束后，操作者执行批准程序的最大持续时间，以秒为单位。如果程序被批准，操作者必须在定义的持续时间结束前执行此程序；否则，程序将被中止，DARC将重置为空闲状态。
+    \item 布尔标志 \texttt{isEnabled}：一个必须设置为 \texttt{True} 的布尔标志，如果投票规则被成功初始化并启用。
+    \item 注释：存储在投票规则中的字符串，包含此投票规则的额外信息、评论或外部URL。
 \end{itemize}
 
 \begin{verbatim}
 struct VotingRule {
 
   /**
-   * the voting token class index list
+   * 投票代币类别索引列表
    */
   uint256[] votingTokenClassList;
 
   /**
-   * the approval threshold percentage of the voting policy
+   * 投票政策的批准阈值百分比
    */
   uint256 approvalThresholdPercentage;
 
   /**
-   * the voting duration of the voting policy in seconds
+   * 投票政策的投票持续时间（秒）
    */
   uint256 votingDurationInSeconds;
 
   /**
-   * the execution pending duration of the voting policy in seconds
+   * 投票政策的执行等待持续时间（秒）
    */
   uint256 executionPendingDurationInSeconds;
 
   /**
-   * the voting policy is enabled or not
+   * 投票政策是否启用
    */
   bool isEnabled;
 
   /**
-   * the note of the voting policy
+   * 投票政策的注释
    */
   string note;
 
   /**
-   * the voting policy is absolute majority or relative majority.
+   * 投票政策是绝对多数还是相对多数。
    */
   bool bIsAbsoluteMajority;
 }
 \end{verbatim}
 
 
-\subsection{Voting Types}
+\subsection{投票类型}
 
-Typically, in the voting system of DARC protocol, there are two types of voting methods:
+通常，在DARC协议的投票系统中，有两种类型的投票方法：
 
 \begin{itemize}
-    \item Absolute Majority: In absolute majority voting, approval requires surpassing a fixed threshold, expressed as a percentage of the total voting weight. If the combined weight of approval votes exceeds a predetermined threshold, the vote is considered successful. For example, with a total weight of 1000 and a threshold set at 70\%, the vote is deemed successful if the total weight of approval votes exceeds 700.
+    \item 绝对多数：在绝对多数投票中，批准需要超过一个固定阈值，以总投票权重的百分比表示。如果批准票的组合权重超过预定阈值，投票被认为是成功的。例如，总权重为1000，阈值设置为70\%，如果批准票的总权重超过700，投票被认为是成功的。
 
-    \item Relative Majority: In relative majority voting, approval is relative to the percentage of the total voting weight. Unlike absolute majority, the total voting weight is a percentage of the actual cast votes rather than a predefined absolute value. For instance, if the total weight is 1000 but only 300 weight is cast in the vote, relative majority requires the approved vote weight to exceed 70\% of the cast votes (0.7 * 300 = 210) for the vote to be considered successful.
+    \item 相对多数：在相对多数投票中，批准是相对于总投票权重的百分比。与绝对多数不同，总投票权重是实际投票权重的百分比，而不是预定义的绝对值。例如，如果总权重为1000，但只有300权重在投票中被投出，相对多数要求批准的投票权重超过投出票的70\%（0.7 * 300 = 210），投票才被认为是成功的。
 \end{itemize}
 
 
-We present the options of ``absolute majority'' and ``relative majority'' in voting due to the distinct emphases these two modes offer when balancing the outcomes of the vote.
+我们提出“绝对多数”和“相对多数”投票选项，是因为这两种模式在平衡投票结果时提供了不同的侧重点。
 
-With regards to the absolute majority, its advantage is that the approved voting weight only needs to constitute a proportion of the total possible vote, offering more flexibility. It is applicable in situations where a significant majority is sufficient to determine the outcome in order to promote broader consensus. Its application scenario is suitable for important decisions where it is crucial to secure support from a substantial majority. Using an absolute majority as the criterion serves to promote broader consensus.
+关于绝对多数，其优势在于批准的投票权重只需要占总可能投票的一部分，提供更多灵活性。它适用于重大决策的情况，其中一个显著多数足以确定结果，以促进更广泛的共识。其应用场景适合于重要决策，其中至关重要的是获得大多数人的支持。使用绝对多数作为标准有助于促进更广泛的共识。
 
-In contrast, relative majority offers the advantage that the approved voting weight merely needs to constitute the largest share of the current vote, providing enhanced expediency and flexibility. This approach is applicable in scenarios where a relative majority is adequate to determine the outcome. Its suitability extends to situations where a more flexible and expedited decision-making process is necessary. Relative majority facilitates achieving consensus more promptly without the need to secure a fixed percentage of the total possible voting weight.
+相比之下，相对多数的优势在于批准的投票权重只需要构成当前投票中的最大份额，提供了更高的便捷性和灵活性。这种方法适用于相对多数足以确定结果的情况。它的适用性扩展到需要更灵活和快速决策过程的情况。相对多数有助于在不需要固定百分比的总可能投票权重的情况下更迅速地达成共识。
 
-By providing both absolute and relative majority options, we enhance the adaptability of voting rules to serve the diverse governance needs of various protocols and organizations. Opting for the appropriate voting mode facilitates better fulfilling the consensus and efficiency requirements of particular decision scenarios.
+通过提供绝对和相对多数选项，我们增强了投票规则以满足不同协议和组织的多样化治理需求的适应性。选择适当的投票模式有助于更好地满足特定决策场景的共识和效率需求。
 
-\subsection{Voting Mechanism}
+\subsection{投票机制}
 
-For each program, after receiving approval from the before-operation plugin and completing its full execution within the sandbox, the judgment system, guided by all after-operation plugins, evaluates each operation. If the judgments from all plugins at the highest level for a particular operation are marked as ``VOTING\_NEEDED'', all the voting rules associated with that plugin are collected. Once the judgment system has compiled all the voting rules corresponding to each operation within the program, it generates a voting item array, assigning each rule to its respective entry.
+对于每个程序，在收到来自操作前插件的批准并在沙箱内完全执行后，由所有操作后插件引导的判断系统，评估每个操作。如果对特定操作的所有插件的最高级别判断标记为“VOTING\_NEEDED”，则收集与该插件相关的所有投票规则。一旦判断系统汇编了程序中每个操作对应的所有投票规则，它会生成一个投票项数组，为其各自的条目分配每条规则。
 
+对于每个操作，可能同时触发一个或多个不同的插件，所有这些插件的返回类型为“VOTING\_NEEDED”。在这种情况下，将按顺序收集指向该操作的每个插件的投票规则。另一方面，对于每个程序，不同的操作可能会被同一个插件依次触发。在投票项数组中，每个操作的对应投票规则将生成一个新的投票项。
 
-For each operation, there may be one or more distinct plugins simultaneously triggered, all having a return type of ``VOTING\_NEEDED''. In such cases, the voting rules associated with each plugin pointing to that operation will be gathered in order. On the other hand, for each program, different operations may be successively triggered by the same plugins. In the voting item array, a new voting item will be generated for each operation from corresponding voting rule.
-
-Figure \ref{fig:voting_item} is an example illustrating how the DARC protocol initializes a voting item array based on judgment results.
+图 \ref{fig:voting_item} 是一个示例，说明DARC协议是如何基于判断结果初始化投票项数组的。
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{voting_item.drawio.png}
-\caption{\label{fig:voting_item}Voting Rules and Items}
+\caption{\label{fig:voting_item}投票规则和项}
 \end{figure}
 
 
-Once a voting item array is initialized, as a finite state machine, the DARC protocol transitions into the voting state. Assuming there are N voting items in the voting item array, all operators will be allowed to cast their votes, submitting a boolean array of length N. Each boolean value represents the operator's support or opposition to the corresponding voting item. For each operator, in every voting state, they can and must vote only once, ensuring that the parameter in the vote operation is a boolean array of length N. If an operator attempts to execute a vote operation more than once or provides a boolean array of a length other than N, the voting program will be automatically rejected.
+一旦投票项数组被初始化，作为有限状态机，DARC协议转换到投票状态。假设在投票项数组中有N个投票项，所有操作者都将被允许投票，提交一个长度为N的布尔数组。每个布尔值代表操作者对相应投票项的支持或反对。对于每个操作者，在每个投票状态中，他们可以且必须只投票一次，确保投票操作中的参数是一个长度为N的布尔数组。如果操作者尝试执行超过一次的投票操作或提供一个长度不为N的布尔数组，投票程序将被自动拒绝。
 
-In the DARC protocol, each voting item has two counters: one for ``YES'' votes and another for ``NO'' votes. Whenever an operator performs a valid voting operation, each voting item calculates the total voting weight of that operator in the corresponding voting rule. In a given voting item, each voting rule defines a set of allowed token levels \(C = [c_1, c_2, ..., c_n]\), where \(n\) is the number of token levels. Each token level \(c_i\) has a corresponding voting weight denoted as \(w_i\). Suppose during the voting process, an operator chooses to vote on this voting item, the operator's voting weight \(W\) is calculated by the following formula:
+在DARC协议中，每个投票项都有两个计数器：一个用于“YES”票，另一个用于“NO”票。每当一个操作者执行有效的投票操作时，每个投票项都会计算该操作者在相应投票规则中的总投票权重。在给定的投票项中，每个投票规则定义了一组允许的代币级别 \(C = [c_1, c_2, ..., c_n]\)，其中 \(n\) 是代币级别的数量。每个级别 \(c_i\) 有一个相应的投票权重，表示为 \(w_i\)。假设在投票过程中，一个操作者选择对这个投票项进行投票，操作者的投票权重 \(W\) 通过以下公式计算：
 
 \[
 W = \sum_{i=1}^{n} w_i v_i
 \]
 
-In this formula, \(W\) represents the total voting weight of the operator for this voting item, and the summation goes through all token levels \(c_i\) allowed for voting. For each level \(i\), \(v_i\) is the quantity of tokens owned by this operator at that level.
+在此公式中，\(W\) 代表操作者对此投票项的总投票权重，求和遍历所有允许投票的代币级别 \(c_i\)。对于每个级别 \(i\)，\(v_i\) 是此操作者在该级别拥有的代币数量。
 
-After each operator submits a valid vote operation, each voting item will increment the corresponding voting weight into the YES or NO counters. If the operator holds zero tokens in the votable token set for a particular voting item, neither the YES nor NO counters will be affected. Upon the completion of the voting process, the DARC protocol will determine whether the voting has concluded based on the following criteria:
+在每个操作者提交有效的投票操作后，每个投票项将把相应的投票权重增加到YES或NO计数器中。如果操作者在可投票代币集合中持有零代币，对于特定的投票项，既不会影响YES计数器也不会影响NO计数器。在投票过程完成后，DARC协议将根据以下标准确定投票是否结束：
 
 \begin{enumerate}
 
-    \item When there is at least one voting item among all voting items operating in absolute majority mode, and this voting item has received a sufficient number of NO votes, the entire voting process will terminate prematurely, resulting in a voting failure. Subsequently, the DARC protocol transitions into the idle state. For instance, if a voting item has an approval threshold of 66\%, operates in absolute majority mode, and has collected over 34\% of NO votes before the deadline, the entire voting process will immediately conclude, resulting in a voting failure and transitioning into the idle state.
+    \item 如果所有投票项中至少有一个在绝对多数模式下运行的投票项收到足够数量的NO票，整个投票过程将提前终止，导致投票失败。随后，DARC协议转换到空闲状态。例如，如果一个投票项的批准阈值为66\%，以绝对多数模式运行，并且在截止日期前收集到超过34\%的NO票，整个投票过程将立即结束，导致投票失败并转换到空闲状态。
 
-    \item When all voting items exclusively operate in absolute majority mode, and each voting item has garnered YES votes surpassing the approval threshold, the entire voting process concludes prematurely, indicating a successful vote. Subsequently, the DARC protocol transitions into the execution pending state.
+    \item 当所有投票项仅在绝对多数模式下运行，并且每个投票项都获得了超过批准阈值的YES票时，整个投票过程将提前结束，表明投票成功。随后，DARC协议转换到等待执行状态。
     
-    \item When the voting state does not meet criteria 1 and 2, the DARC protocol will wait until the deadline expires for assessment. If, post-deadline, each voting item in absolute majority mode has received equal to or more than the total voting weight multiplied by the threshold in YES votes, and for each voting item in relative majority mode, the item has garnered equal to or more than the submitted voting weight multiplied by the threshold in YES votes, the vote is approved, and the DARC protocol transitions to the execution pending state. If any voting item fails to meet this criterion, the vote is deemed unsuccessful, and the DARC protocol reverts to the idle state.
+    \item 当投票状态不符合标准1和2时，DARC协议将等待截止日期到期进行评估。如果在截止日期后，每个在绝对多数模式下的投票项都收到了等于或超过总投票权重乘以阈值的YES票，并且对于每个在相对多数模式下的投票项，该项获得了等于或超过提交的投票权重乘以阈值的YES票，投票被批准，DARC协议转换到等待执行状态。如果任何投票项未能满足此标准，投票被认为是不成功的，DARC协议恢复到空闲状态。
 \end{enumerate}
 
-After entering the execution pending state, the program stored in the current voting state has been approved and is ready for execution. The program must be completed before the new execution pending deadline. Upon successful execution, the DARC protocol transitions to the idle state. However, if an error or exception occurs during execution or if no one executes the program before the deadline, the DARC protocol also reverts to the idle state, and the program becomes unable to proceed with execution.
+在进入等待执行状态后，当前投票状态中存储的程序已被批准且准备执行。程序必须在新的等待执行截止日期前完成。成功执行后，DARC协议转换到空闲状态。然而，如果在执行过程中发生错误或异常，或者如果在截止日期前没有人执行程序，DARC协议也会恢复到空闲状态，并且程序将无法继续执行。
 
 
 \end{document}

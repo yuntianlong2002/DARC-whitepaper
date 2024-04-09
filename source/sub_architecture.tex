@@ -1,71 +1,70 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
-\section{DARC Architecture}
+\section{DARC架构}
 
+DARC是一个使用Solidity编程语言 \cite{soliditylangSolidityx2014} 构建的虚拟机，可以编译并部署到任何兼容EVM的本地devnet、testnet或mainnet上，而不受合约代码大小限制(EIP-170) \cite{ethereumEIP170Contract}。在DARC协议成功编译并部署到您的区块链之后，用户可以使用darc.js（用于部署和与您的DARC交互的官方Node.js SDK）或ethers.js \cite{ethersDocumentation} 以及相应的DARC应用二进制接口（ABI）编写程序并发送至您的DARC虚拟机。用户也可以通过这种方式从部署的DARC中读取数据和信息。
 
-The DARC is a virtual machine built with Solidity programming language \cite{soliditylangSolidityx2014}, and can be compiled and deployed to any EVM-compatible on local devnet, testnet or mainnet without contract code size limit(EIP-170) \cite{ethereumEIP170Contract}. After the DARC protocol is successfully compiled and deployed to your blockchain, user can compose a program and send it to your DARC virtual machine using darc.js(the official Node.js SDK for deploying and interacting with your DARC) or ethers.js \cite{ethersDocumentation} with corresponding DARC Application Binary Interface(ABI). User can also read data and information from the deployed DARC in this way.
-
-Figure \ref{fig:architecture} shows the overview of the DARC protocol. 
+图 \ref{fig:architecture} 展示了DARC协议的概览。
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{architecture.png}
-\caption{\label{fig:architecture}The architecture of DARC virtual machine.}
+\caption{\label{fig:architecture}DARC虚拟机的架构。}
 \end{figure}
 
-\subsection{DARC Runtime}
+\subsection{DARC运行时}
 
-The first level of DARC virtual machine is the Application Binary Interface (ABI) of the smart contract that allows user to compose and pass the programs into the DARC for executing. The program loader is the the entrace for all programs that are sent from user by using darc.js or ethers.js. 
+DARC虚拟机的第一层是智能合约的应用二进制接口（ABI），允许用户编写程序并将其传递给DARC执行。程序加载器是所有通过使用darc.js或ethers.js从用户那里发送的程序的入口。
 
-\subsection{Program Loader}
+\subsection{程序加载器}
 
-Program loader is the module in the DARC runtime that receive the program from users. As the entrance of the DARC virtual machine, Program loader manages the whole process of handling the program, including validating the program, executing the program, determine the program compliance with the restriction plugin system, sending the program to the sandbox, starting a voting, ending a voting, pause a voting, refund unnecessary cash (the native tokens) back to the account balance. Program loader is the basic and fundamental module that handle the whole lifecycle of executing a program, as well as the state of the DARC for voting period.
+程序加载器是DARC运行时中接收用户程序的模块。作为DARC虚拟机的入口，程序加载器管理处理程序的整个过程，包括验证程序、执行程序、判断程序是否符合限制插件系统的要求、将程序发送到沙箱、启动投票、结束投票、暂停投票、将不必要的现金（原生代币）退回到账户余额。程序加载器是处理执行程序整个生命周期的基础和核心模块，以及DARC的投票期间的状态。
 
-\subsubsection{Program Validator}
+\subsubsection{程序验证器}
 
-Program validator is the module that checking if the program is valid, including calculate the total consumption of native tokens for each program, checking the basic syntax and parameters of each operation. When receiving the calculated consmuption of native tokens from program validator, the program loader will compare with the actual amount of native tokens user send with the program. If the value of native tokens sent is greater than the total comsumption, the program will be executed and the remaining amount of native tokens will be sent back to the user's balance; if the value of native tokens is less than the total comsumption, the program will be rejected directly, and all the native tokens will be refund into user's balance.
+程序验证器是检查程序是否有效的模块，包括计算每个程序的原生代币总消耗、检查每个操作的基本语法和参数。当程序验证器接收到计算出的原生代币消耗量时，程序加载器将与用户发送的程序所附带的原生代币实际金额进行比较。如果发送的原生代币值大于总消耗，则程序将被执行，并且剩余的原生代币金额将被退回到用户的余额中；如果原生代币的值小于总消耗，则程序将直接被拒绝，并且所有原生代币将被退回到用户的余额中。
 
-\subsubsection{Voting Finite-State Machine}
+\subsubsection{投票有限状态机}
 
-Voting Finite-State Machine is a Finite-State Macine(FSM) that handle the lifecycle of a voting procedure, including an idle state(all program can be submitted and executed), voting state(the process that only the program with operation ``vote'' can be executed), and a execution pending state(a period of time that allows user to execute a pending program that is approved by previous voting process). 
+投票有限状态机（FSM）是处理投票程序生命周期的有限状态机，包括空闲状态（所有程序都可以提交和执行）、投票状态（只有包含“投票”操作的程序可以执行）和执行待定状态（允许用户执行之前通过投票过程批准的待定程序的一段时间）。
 
-\subsubsection{Machine State Dashboard}
+\subsubsection{机器状态仪表板}
 
-Machine State Dashboard is a set of interface that allows user to read all the necessary data and information from the DARC entity, including the basic information and parameters of DARC setup, the balances of multi-level token system for all token holders, the balance of withdrawable cash and dividends, the restriction plugins, the voting rules, and operation histories. All the functions in Machine State Dashboard are read-only and declared with ``view'' keyword, in which user can read the information without extra gas fee.
+机器状态仪表板是一组允许用户从DARC实体读取所有必要数据和信息的接口，包括DARC设置的基本信息和参数、所有代币持有者的多级代币系统余额、可提取的现金和分红余额、限制插件、投票规则和操作历史记录。机器状态仪表板中的所有函数都是只读的，并且用“view”关键字声明，用户可以在不需要额外燃料费的情况下读取信息。
 
-\subsection{Execution Engine}
+\subsection{执行引擎}
 
-The Execution Engine is the core module that check the validation via plugin system and execute each operation in both machine state and sandbox in the DARC virtual machine. It is similar like other intepreter for other Interpreted programming language, such like Java, Python, JavaScript, Perl, etc. 
+执行引擎是核心模块，通过插件系统检查验证并在DARC虚拟机的机器状态和沙箱中执行每个操作。它类似于其他解释型编程语言的解释器，如Java、Python、JavaScript、Perl等。
 
-After a program is validated and sent from runtime program loader, it will be directly passed into the execution engine. The Operation Validator is a module that checks if each operation is valid with right parameter syntax, such as the length of parameters and the types of parameters. After each opcode and corresponding parameters from the program is checked and validated by the operation validator, it will be ready to be checked by plugin judgement system and executed inside the opcode table and interpreter.
+在程序通过运行时程序加载器验证并发送后，它将直接传递给执行引擎。操作验证器是检查每个操作是否具有正确参数语法的模块，例如参数的长度和类型。在程序中的每个操作码和相应参数被操作验证器检查并验证后，它将准备好被插件判断系统检查并在操作码表和解释器内执行。
 
-The opcode table is the module that analyze each opeartion with opcode and parameters and execute in the intepreter. When an operation is sent into the opcode table, it will be compared and sent to the interpreter with parameters and execute in the machine state or in the sandbox.
+操作码表是分析每个操作的模块，带有操作码和参数，并在解释器中执行。当操作被发送到操作码表时，它将与参数一起被比较并发送到解释器执行在机器状态或沙箱中。
 
-The plugin judgement system is the core module that check each operation and make the final judgement for the program, which decide the program should be accepted and executed in the machine state, rejected, executed in the sandbox and make the decision, pending and start voting for the final decision, or rejected after executed in the sandbox. The plugin judgement system reads two arrays of restriction plugins from the machine state: before-operation plugins array and after-operation plugins array. 
+插件判断系统是核心模块，检查每个操作并为程序做出最终判断，决定程序应被接受并在机器状态中执行、被拒绝、在沙箱中执行并做出决定、挂起并开始投票以做出最终决定，或在沙箱中执行后被拒绝。插件判断系统从机器状态中读取两个限制插件数组：操作前插件数组和操作后插件数组。
 
-When the program passes the operation validator, it will be first checked by all the before-operation plugins: if all of the operations are approved by all before-operation plugins and allowed to be executed in the machine state, it will be passed to the opcode table and executed in the interpreter; if at least one of the operation is rejected by any before-operation plugin, the whole program will be rejected and the transaction will be reverted; otherwise, if none of the operations are rejected, but at least one of the operation is marked by any before-operation plugin as ``sandbox needed'', the legality of the program is not determined yet, and the whole program needs to be executed in the sandbox. 
+当程序通过操作验证器时，它将首先被所有操作前插件检查：如果所有操作都被所有操作前插件批准并允许在机器状态中执行，则程序将被传递到操作码表并在解释器中执行；如果任何操作被任何操作前插件拒绝，则整个程序将被拒绝并且事务将被回滚；否则，如果没有操作被拒绝，但至少一个操作被任何操作前插件标记为“需要沙箱”，则程序的合法性尚未确定，整个程序需要在沙箱中执行。
 
-After executed in the sandbox, the operation and the sandbox state will be checked by the after-operation plugins: if all of the operations and sandbox state are approved by all after-operation plugins, the program will be passed back to the opcode table and executed in the interpreter; if any of the operations or sandbox state is rejected by any after-operation plugin, the program will be rejected and the transaction will be reverted; otherwise, if none of the operations are rejected but at least one of the operation is marked by any after-operation plugin as ``vote needed'', then the program will be suspended and waiting for the final vote results, and will be allowed to executed after approved by the voting process and executed in the ``execution pending time''.
+在沙箱中执行后，操作和沙箱状态将由操作后插件检查：如果所有操作和沙箱状态都被所有操作后插件批准，则程序将被传回操作码表并在解释器中执行；如果任何操作或沙箱状态被任何操作后插件拒绝，则程序将被拒绝并且事务将被回滚；否则，如果没有操作被拒绝但至少一个操作被任何操作后插件标记为“需要投票”，则程序将被挂起并等待最终投票结果，并且只有在通过投票过程批准并在“执行待定时间”内执行后才被允许执行。
 
-Since the sandbox also contains a copy of all before-operation plugins and after operation plugins, the after-operation sandbox check only uses the after-operation plugins in the current state. This is because the legality of a program should be only determined by the current machine state, including current plugin judgement system, and the machine state is allowed to be updated only by the program that is legal or approved by current machine state, current plugin judgement system and the voting result if necessary.
+由于沙箱还包含所有操作前插件和操作后插件的副本，操作后沙箱检查仅使用当前状态中的操作后插件。这是因为程序的合法性应仅由当前机器状态决定，包括当前插件判断系统，而机器状态只允许由当前机器状态、当前插件判断系统和必要时的投票结果批准的程序更新。
 
-The workflow of the execution engine is shown in the figure \ref{fig:workflow}.
+执行引擎的工作流程如图 \ref{fig:workflow} 所示。
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{execution_flow.drawio.png}
-\caption{\label{fig:workflow}The workflow of execution engine.}
+\caption{\label{fig:workflow}执行引擎的工作流程。}
 \end{figure}
 
-\subsection{Machine State Manager}
+\subsection{机器状态管理器}
 
-Machine state manager is the module that store and manage all the state of the DARC. It contains three part: machine state, sandbox(the cloned machine state) and voting state. The machine state contains all the necessary state and assets of the DARC virtual machine, including token system, memberships, withdrawable cash and dividends balance, operation history, plugins and voting rules. 
+机器状态管理器是存储和管理DARC所有状态的模块。它包含三部分：机器状态、沙箱（克隆的机器状态）和投票状态。机器状态包含DARC虚拟机的所有必要状态和资产，包括代币系统、成员资格、可提取的现金和分红余额、操作历史、插件和投票规则。
 
-\subsubsection{Tokens}
+\subsubsection{代币}
 
-The token system is the most fundamental and core design in the DARC protocol. The machine state contains an array of tokens, each token contains different voting weight, dividend weight, token balance, token symbol(token information) and total supply.
+代币系统是DARC协议中最基本和核心的设计。机器状态包含一个代币数组，每个代币包含不同的投票权重、分红权重、代币余额、代币符号（代币信息）和总供应量。
 
-The structure of each level token's information is stored in the machine state manager in following Solidity struct.
+每个级别代币的信息结构存储在机器状态管理器中，如下Solidity结构所示。
 
 \begin{verbatim}
 struct Token {
@@ -80,27 +79,27 @@ struct Token {
 }
 \end{verbatim}
 
-The token balance is a mapping from address to uint256. The key is the owner address of current level token, and the value is the number of tokens owned by this owner address. Also DARC maintains an array of address, ownerList, as the full list of all addresses with at least one token in current level of token.
+代币余额是从地址到uint256的映射。键是当前级别代币的拥有者地址，值是该拥有者地址所拥有的代币数量。DARC还维护一个地址数组ownerList，作为拥有至少一个当前级别代币的所有地址的完整列表。
 
-\subsubsection{Memberships}
+\subsubsection{成员资格}
 
-Membership is a a mapping from addresses to levels that enable the DARC to manage different address hierarchicially. The governance of DARC can make sure that different level of people can be assigned with different levels.
+成员资格是一个从地址到级别的映射，使DARC能够层次化地管理不同地址。DARC的治理可以确保不同级别的人被分配到不同的级别。
 
-The reason that we introduce membership in DARC protocol is that users can develop different plugins to define different rules related to roles and addresses.
+我们在DARC协议中引入成员资格的原因是，用户可以开发不同的插件来定义与角色和地址相关的不同规则。
 
-In the implementation of DARC Protocol, membership is defined as the following data structure:
+在DARC协议的实现中，成员资格被定义为以下数据结构：
 
 \begin{verbatim}
 /**
-* The member list and internal role index number of each token owner,
-* which can be used to represent the shareholders, co-founders, employees, 
-* board members, special agents, etc.
+* 每个代币拥有者的成员列表和内部角色索引号，
+* 可用于代表股东、联合创始人、雇员、
+* 董事会成员、特殊代理等。
 */
 mapping (address => MemberInfo) memberInfoMap;
 
 /**
- * The stock token owner information of the DARC protocol
- * This struct is used to store the role index number of each token owner
+ * DARC协议的股票代币拥有者信息
+ * 此结构用于存储每个代币拥有者的角色索引号
  */
 struct MemberInfo {
   bool bIsInitialized;
@@ -111,24 +110,23 @@ struct MemberInfo {
 \end{verbatim}
 
 
-\subsubsection{Withdrawable cash and dividends}
+\subsubsection{可提取现金和分红}
 
-Withdrawable cash and dividends are two separate balance hashmaps. Operator can withdraw native tokens(like Ethereum) from both of the balance if the balance is not zero. For withdrawable cash, the only way to add withdrawable tokens to the address balance is to execute \texttt{BATCH\_ADD\_WITHDRAWABLE\_BALANCE} operation with target addresses and amounts of tokens. If the operation is approved, the corresponding amounts will be added to the balances. For dividends, the only way to add withdrawable tokens to the balance is to execute \texttt{OFFER\_DIVIDENDS} operation without any parameters. If the operation is approved, all token holders with dividendable tokens(tokens with dividend weight larger than 0) will receive the corresponding amount of dividends.
+可提取现金和分红是两个独立的余额哈希映射。操作者可以从这两个余额中提取原生代币（如以太坊），如果余额不为零。对于可提取现金，向地址余额添加可提取代币的唯一方式是执行\texttt{BATCH\_ADD\_WITHDRAWABLE\_BALANCE}操作，带有目标地址和代币金额。如果操作被批准，相应金额将被添加到余额中。对于分红，向余额添加可提取代币的唯一方式是执行\texttt{OFFER\_DIVIDENDS}操作，不带任何参数。如果操作被批准，所有拥有分红权重大于0的代币持有者将收到相应的分红金额。
 
-To withdraw the native tokens from the DARC to the address, the operator can execute \texttt{WITHDRAW\_CASH\_TO} to transfer withdrawable cash from balance to target addresses, or execute \texttt{WITHDRAW\_DIVIDENDS\_TO} to transfer dividends from balance to target addresses if the operations are approved.
+要将原生代币从DARC提取到地址，操作者可以执行\texttt{WITHDRAW\_CASH\_TO}操作，将可提取现金从余额转移到目标地址，或在操作被批准的情况下，执行\texttt{WITHDRAW\_DIVIDENDS\_TO}操作，将分红从余额转移到目标地址。
 
-\subsubsection{Operation History}
+\subsubsection{操作历史}
 
-Operation history is a log system that contains each address with its all the corresponding operations, each operation with its latest timestamp. When a program is executed successfully, the timestamps of the operations contained in the program will be updated in the operation history. With the operation history, developers can set minimum time interval between each operations for a single address or for all members in the DARC.
+操作历史是一个日志系统，包含每个地址及其所有相应操作的记录，每个操作都有其最新的时间戳。当程序成功执行后，程序中包含的操作的时间戳将在操作历史中更新。通过操作历史，开发者可以为单个地址或DARC中的所有成员设置每个操作之间的最小时间间隔。
 
-Rule 1 is an example about using operation history to limit the operator to execute the same operation in a period of time:
+规则1是一个使用操作历史限制操作者在一段时间内执行相同操作的示例：
 
-\textbf{Rule 1}: We provide 10 ETH per month as the salary for both employee-level and manager-level address (level 4 \& 5 members).
+\textbf{规则1}：我们每月提供10 ETH作为雇员级别和经理级别地址（4级和5级成员）的工资。
 
+对于规则1，我们需要确保如果操作者被分配的角色级别等于4或5，操作是添加可提取余额，操作的总金额小于或等于10 ETH（或10000000000000000000 wei），并且操作者在超过30天（或2592000秒）的时间内进行了相同的操作，则该操作将被批准，且该操作无需进行沙箱检查。
 
-For the Rule 1, we need to make sure that if the operator is assigned with a role level equals 4 or 5, the operation is adding withdrawable balance, the total amount of operation is less than or equal to 10 ETH(or 10000000000000000000 wei), and the operator did the same operation in more than 30 days(or 2592000 seconds), this operation will be approved and sandbox check can be skipped for this operation.
-
-Here is an example plugin for Rule 1 designed in By-law Script:
+这里是一个为规则1设计的By-law脚本中的插件示例：
 
 \begin{verbatim}
 const plugin_Rule_1 = 
@@ -149,90 +147,89 @@ const plugin_Rule_1 =
 }
 \end{verbatim}
 
-Rule 1 does not restrict the target address of the \texttt{BATCH\_ADD\_WITHDRAWABLE\_BALANCE} operation. This is because operators are allowed to add 10 ETH to their own withdrawable cash, and they are also allowed to add to other addresses, as long as they do not exceed a total of 10 ETH of add withdrawable cash within 30 days.
+规则1没有限制\texttt{BATCH\_ADD\_WITHDRAWABLE\_BALANCE}操作的目标地址。这是因为允许操作者向自己的可提取现金中添加10 ETH，也允许他们向其他地址添加，只要他们在30天内添加的可提取现金总额不超过10 ETH。
 
-\subsubsection{Plugins}
+\subsubsection{插件}
 
-Plugins are the fundamental mechanism in DARC protocol, because all the rules and regulations need to be defined, transpiled and saved in DARC plugin system. There are two plugin arrays in the DARC protocol: before-operation plugins and after-operation plugins.
+插件是DARC协议中的基础机制，因为所有规则和规章都需要在DARC插件系统中定义、转译并保存。DARC协议中有两个插件数组：操作前插件和操作后插件。
 
 
-In the figure \ref{fig:workflow}, each program submitted to a DARC needs to be checked by all before-operation plugins, and if any operation of the program violates any before-operation plugin, the program will be rejected. 
+在图 \ref{fig:workflow} 中，提交给DARC的每个程序都需要通过所有操作前插件的检查，如果程序的任何操作违反了任何操作前插件，则程序将被拒绝。
 
-If all operations are approved and no sandbox check needed, the DARC will execute the program directly; if one or some operations needs to be checked in the sandbox, the DARC will first copy all states from current DARC into the sandbox, then execute the whole program inside the sandbox, and double check the state of sandbox with after-operation plugins: if all the states and operations are approved by all after-operation plugins, the program will be approved and finally be executed in the real machine state; if one or some of the operations cannot be approved and need voting to make the further decision, the program will be suspended and the plugin system will start a voting process in the DARC, and the program will be approved and executed if and only if every pending operation is approved by the voting process, otherwise the program will be aborted and back to idle state.
+如果所有操作都被批准且不需要沙箱检查，DARC将直接执行程序；如果一个或某些操作需要在沙箱中检查，DARC将首先将机器状态克隆到沙箱，然后在沙箱内执行整个程序，并根据执行结果和沙箱状态做出决定。
 
-Each plugin is composed with following items:
+每个插件由以下项目组成：
 \begin{itemize}
-\item Return type: the decision of the plugin when the condition is triggered, including \texttt{YES}, \texttt{VOTING\_NEEDED}, \texttt{NO}, \texttt{YES\_AND\_SKIP\_SANDBOX} and \texttt{SANDBOX\_NEEDED}.
-\item Level: the priority of current plugin when the condition is triggered. When an operation triggers multiple plugins, the plugin system will make the final decision with the return type from the plugin with the highest level. Since each level only allows plugins with the same return type, this will make sure that each operation will get a certain judgement result from the plugin system.
-\item Condition nodes: the \texttt{conditionNodes} is an array of condition nodes that represents the expression binary tree of this plugin. Each node can be a condition expression with parameters that validate a certain criteria, or a logical operators that combines two or multiple child nodes (condition expressions or logical operations) into a single condition expression. 
-\item Voting rule index: the index number that pointing to a certain voting rule if the condition expression criteria is triggered and the return type of the plugin is \texttt{VOTING\_NEEDED}. If a voting process is needed, the judgement system will traverse all \texttt{VOTING\_NEEDED} plugins and create a voting process with multiple items with selected voting rules.
-\item Note: the notes by plugin designers for future purpose.
-\item Boolean flag \texttt{bIsEnabled}: the boolean flag that indicates if the plugin is enabled or not. Since the plugin is immutable in the whole life cycle, the operator cannot remove or modify the plugin after deployed successfully. The only way to disable a certain plugin is to set the boolean flag \texttt{bIsEnabled} from \texttt{True} to \texttt{False}. Also the plugin can be enabled by set it back to \texttt{True} if the operation is allowed.
-\item Boolean flag \texttt{bIsInitialized}: the boolean flag that indicates if the plugin is successfully initialized. If \texttt{False}, the judgement system will skip this plugin.
-\item Boolean flag \texttt{bIsBeforeOperation}: the boolean flat that indicates if the plugin is before-operation or after-operation plugin array. Although the before-operation plugins and after-operation plugins are stored and managed in two seperate arraies, this boolean will be double-checked when judgement system goes through each array. This field is required to make sure that each plugin object struct is aligned when constructing the plugin from By-law script and sending through the DARC program entrance.
+\item 返回类型：当条件被触发时插件的决策，包括\texttt{YES}、\texttt{VOTING\_NEEDED}、\texttt{NO}、\texttt{YES\_AND\_SKIP\_SANDBOX}和\texttt{SANDBOX\_NEEDED}。
+\item 等级：当条件被触发时当前插件的优先级。当操作触发多个插件时，插件系统将使用具有最高等级的插件的返回类型作为最终决策。由于每个等级只允许具有相同返回类型的插件，这将确保每个操作都从插件系统获得确定的判断结果。
+\item 条件节点：\texttt{conditionNodes}是表示此插件表达式二叉树的条件节点数组。每个节点可以是一个带参数的条件表达式，用于验证某个标准，或一个逻辑运算符，将两个或多个子节点（条件表达式或逻辑操作）合并为单个条件表达式。
+\item 投票规则索引：如果条件表达式标准被触发并且插件的返回类型是\texttt{VOTING\_NEEDED}，则指向某个特定投票规则的索引号。如果需要投票过程，判断系统将遍历所有\texttt{VOTING\_NEEDED}插件并创建一个带有选定投票规则的多项投票过程。
+\item 注释：插件设计者为将来目的留下的注释。
+\item 布尔标志\texttt{bIsEnabled}：指示插件是否启用的布尔标志。由于插件在整个生命周期中是不可变的，操作者在成功部署后不能移除或修改插件。禁用某个插件的唯一方式是将布尔标志\texttt{bIsEnabled}从\texttt{True}设置为\texttt{False}。如果操作被允许，也可以通过将其设置回\texttt{True}来启用插件。
+\item 布尔标志\texttt{bIsInitialized}：指示插件是否成功初始化的布尔标志。如果\texttt{False}，判断系统将跳过此插件。
+\item 布尔标志\texttt{bIsBeforeOperation}：指示插件是操作前还是操作后插件数组的布尔标志。虽然操作前插件和操作后插件存储和管理在两个单独的数组中，但在判断系统遍历每个数组时将对此布尔值进行二次检查。这个字段是必需的，以确保在通过By-law脚本构建插件并通过DARC程序入口发送时，每个插件对象结构保持一致。
 
 \end{itemize}
 
 
-The structure of a plugin is designed in Solidity with below struct:
+插件的结构在Solidity中以以下结构设计：
 
 \begin{verbatim}
 struct Plugin {
   /**
-   * the return type of the current condition node
+   * 当前条件节点的返回类型
    */
   EnumReturnType returnType;
 
   /**
-   * the level of restriction, from 0 to the maximum value of uint256
+   * 限制的等级，从0到uint256的最大值
    */
   uint256 level;
 
   /**
-   * condition binary expression tree vector
+   * 条件二进制表达式树向量
    */
   ConditionNode[] conditionNodes;
 
   /**
-   * the voting rule id of the current plugin if the return type is VOTING_NEEDED
+   * 如果返回类型为VOTING_NEEDED，则当前插件的投票规则id
    */
   uint256 votingRuleIndex;
 
   /**
-   * the plugin note
+   * 插件注释
    */
   string note;
 
   /**
-   * the boolean that indicates whether the plugin is enabled or not
+   * 指示插件是否启用的布尔值
    */
   bool bIsEnabled;
 
   /**
-   * the boolean that indicates whether the plugin is deleted or not
+   * 指示插件是否被删除的布尔值
    */
   bool bIsInitialized;
 
   /**
-   * the boolean that indicates whether the plugin is a before operation 
-   * plugin or after operation plugin
+   * 指示插件是操作前插件还是操作后插件的布尔值
    */
   bool bIsBeforeOperation;
   
 }
 \end{verbatim}
 
-\subsubsection{Voting Rule Array}
+\subsubsection{投票规则数组}
 
-Voting rule array is an array that stores all the voting rules for the DARC protocol. When a program is executed in the sandbox and being checked by the plugin judgement system, one or multiple operations may be pending and waiting for the voting results. During the voting process, all members are allowed to vote during the valid voting period. Each voting rule contains all the necessary requirements that starts the voting item.
+投票规则数组是存储DARC协议中所有投票规则的数组。当程序在沙箱中执行并被插件判断系统检查时，一个或多个操作可能处于待定状态，等待最终投票结果。在投票过程中，所有成员都被允许在有效的投票期间投票。每个投票规则包含启动投票项所需的所有必要要求。
 
 
-\subsection{Sandbox}
+\subsection{沙箱}
 
-The sandbox of DARC has exactly the same storage design as the machine state manager, including the token system, memberships, withdrawable cash, dividends, operation history, plugins and voting rules. For each program that cannot be approved by the before-operation plugins, the DARC machine state manager will first clone the machine state to the sandbox, execute the program in the sandbox, and make the decision based on the execution result and the sandbox state. 
+DARC的沙箱与机器状态管理器的存储设计完全相同，包括代币系统、成员资格、可提取现金、分红、操作历史、插件和投票规则。对于不能被操作前插件批准的每个程序，DARC机器状态管理器将首先将机器状态克隆到沙箱，然后在沙箱内执行程序，并根据执行结果和沙箱状态做出决定。
 
-\subsection{Voting State}
+\subsection{投票状态}
 
-In the machine state manager, voting state is a standalone module that managing all voting-related properties. Voting item manager contains all the voting items in history, and each voting item contains the program waiting for the final voting result, the accumulated voting power and voting records for each address.
+在机器状态管理器中，投票状态是管理所有与投票相关属性的独立模块。投票项管理器包含历史上所有的投票项，每个投票项包含等待最终投票结果的程序、累积的投票权力和每个地址的投票记录。
 
 \end{document}

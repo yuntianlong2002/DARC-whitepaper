@@ -1,33 +1,33 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
 
-\section{Dividends}
+\section{分红}
 
-The dividendable fund pool will contain a fraction of $X$ per ten thousand, which can be used for dividend distribution. For the total amount $T$ in the dividendable fund pool and the sum of dividend weights of various token levels within the current DARC protocol, we can determine the dividend amount for each dividend unit as follows:
+可分红资金池将包含万分之 $X$ 的一部分，可用于分红分配。对于可分红资金池中的总金额 $T$ 以及当前DARC协议内各个代币级别的分红权重之和，我们可以按照以下方式确定每个分红单位的分红金额：
 
 \[u = \frac{XT}{10000W}\]
 
-Here, $u$ represents the dividend amount for each dividend unit, $T$ is the total amount in the dividendable fund pool, and $W$ represents the sum of dividend weights for all dividendable tokens across different token levels within the current DARC protocol.
+这里，$u$ 代表每个分红单位的分红金额，$T$ 是可分红资金池中的总金额，$W$ 代表当前DARC协议内所有可分红代币跨不同代币级别的分红权重之和。
 
-For each user, assuming that the sum of dividend weights from various token levels that user $i$ holds is $D_i$, the total dividend amount $U_i$ that user $i$ can receive in this round is given by:
+对于每个用户，假设用户 $i$ 持有的各个代币级别的分红权重之和为 $D_i$，那么用户 $i$ 在本轮中可以接收的总分红金额 $U_i$ 为：
 
 \[ U_i = \frac{D_i}{10000}u\]
 
-For the DARC protocol, three dividend distribution methods can be employed:
+对于DARC协议，可以采用三种分红分配方法：
 
-Transaction-Based Dividend Distribution:
-The first approach involves distributing dividends based on the quantity of dividendable transactions. This is achieved by setting the dividend transaction cycle counter, $N$, to a reasonable value. Upon receiving at least $N$ dividendable transactions, the instruction \texttt{OFFER\_DIVIDENDS} becomes executable. Upon execution, the dividendable fund pool and dividendable transaction cycle counter are reset to zero, initiating a new count. This process repeats, waiting for the next $N$ transactions and subsequent dividend distribution operation.
+基于交易的分红分配：
+第一种方法是基于可分红交易的数量分配分红。这通过设置分红交易周期计数器，$N$，到一个合理的值来实现。一旦接收到至少 $N$ 个可分红交易，指令 \texttt{OFFER\_DIVIDENDS} 就变得可执行。执行后，可分红资金池和可分红交易周期计数器被重置为零，开始新的计数。这个过程重复，等待下一个 $N$ 交易和随后的分红分配操作。
 
-Time-Based Dividend Distribution:
-The second method entails dividend distribution based on time. Setting $N$ to 1, an additional plugin can be introduced, allowing \texttt{OFFER\_DIVIDENDS} to be invoked no less than S seconds after the previous call within the entire DARC instance. In this manner, dividends can be scheduled every 2 weeks, 4 weeks, 3 months, 6 months, or 1 year. This approach aligns more closely with traditional corporate dividends.
+基于时间的分红分配：
+第二种方法是基于时间分配分红。将 $N$ 设置为 1，可以引入一个额外的插件，允许在整个DARC实例中，\texttt{OFFER\_DIVIDENDS} 被调用的时间不少于上一次调用后的 S 秒。以这种方式，分红可以每2周、4周、3个月、6个月或1年安排一次。这种方法更接近传统公司的分红。
 
-Fund-Pool-Based Dividend Distribution:
-The third method involves distributing dividends based on the total amount in the dividendable fund pool. Setting $N$ to 1, an additional plugin enables the execution of \texttt{OFFER\_DIVIDENDS} whenever the amount in the dividendable fund pool exceeds a specified threshold. Following this design, a dividend distribution can be triggered after obtaining $Y$ dividendable native tokens.
+基于资金池的分红分配：
+第三种方法涉及根据可分红资金池中的总金额分配分红。将 $N$ 设置为 1，一个额外的插件使得一旦可分红资金池中的金额超过一个指定的阈值，就可以执行 \texttt{OFFER\_DIVIDENDS}。根据这种设计，分红分配可以在获得 $Y$ 个可分红本币代币后触发。
 
-Users can choose any of the above methods or design plugins to create alternative, practical, and rational dividend distribution patterns based on different DARC organizational structures and methods.
+用户可以选择上述任何一种方法，或者设计插件来创建基于不同DARC组织结构和方法的替代、实用和合理的分红分配模式。
 
-It is crucial to note that performing \texttt{OFFER\_DIVIDENDS} for every received dividendable transaction may result in significant gas fee wastage. This is due to the potential time complexity of $O(MNP)$, where $M$ represents the number of token levels, $N$ is the number of tokens in each level, and $P$ is the total number of token holders. Therefore, implementing an efficient dividend distribution mechanism to save on gas fees is imperative.
+需要注意的是，对于每个收到的可分红交易执行 \texttt{OFFER\_DIVIDENDS} 可能会导致大量的Gas费用浪费。这是由于潜在的时间复杂度为 $O(MNP)$，其中 $M$ 代表代币级别的数量，$N$ 是每个级别中的代币数量，$P$ 是代币持有者的总数。因此，实现一个高效的分红分配机制以节省Gas费用是必要的。
 
-Additionally, funds in the dividendable fund pool are not locked within the smart contract by the DARC protocol. The protocol does not safeguard dividends in cash, and \texttt{OFFER\_DIVIDENDS} only performs a calculation, storing each token holder's upcoming dividends in a withdrawable dividend balance. When the operator withdraws dividends, it is impossible if the DARC protocol lacks a sufficient quantity of native tokens. To protect the dividend rights of specific or all token holders, additional plugins must be designed.
+此外，可分红资金池中的资金不会被DARC协议锁定在智能合约中。协议不保障现金分红，\texttt{OFFER\_DIVIDENDS} 只执行计算，将每个代币持有者即将获得的分红存储在可提取的分红余额中。当操作者提取分红时，如果DARC协议没有足够数量的本币代币，这是不可能的。为了保护特定或所有代币持有者的分红权利，必须设计额外的插件。
 
 \end{document}

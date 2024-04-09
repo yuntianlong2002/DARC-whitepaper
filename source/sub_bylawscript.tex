@@ -1,54 +1,53 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
 
-\section{By-law Script}
+\section{法规脚本}
 
-By-law Script is a programming language with a JavaScript-like syntax specifically designed for use with the DARC protocol. Users can use By-law Script to execute a variety of tasks, including:
+法规脚本是一种专为DARC协议设计的、具有类JavaScript语法的编程语言。用户可以使用法规脚本执行多种任务，包括：
 
 \begin{itemize}
-    \item Operations: Users have the capability to initiate a series of operations using By-law Script. These operations encompass actions like minting and burning new tokens, token transfers, token purchases, enabling or disabling plugins, and fund withdrawals, among others.
+    \item 操作：用户可以使用法规脚本发起一系列操作。这些操作包括铸造和销毁新代币、代币转移、代币购买、启用或禁用插件以及资金提取等行动。
 
-    \item Plugin Design: By-law Script allows users to design plugins with binary expression trees, incorporating logical operators and DARC judgment expressions with parameters. These plugins can define a return type and, when necessary, specify a voting rule.
+    \item 插件设计：法规脚本允许用户使用二元表达式树设计插件，结合逻辑运算符和带参数的DARC判断表达式。这些插件可以定义一个返回类型，并在必要时指定一个投票规则。
 
-    \item Voting: By-law Script facilitates the process of voting for the current operation.
+    \item 投票：法规脚本简化了当前操作的投票过程。
 \end{itemize}
 
-The syntax of the By-law Script closely resembles that of vanilla JavaScript, encompassing variables, constants, assignments, basic data types, functions, classes, and various other features. In addition to the fundamental JavaScript syntax, the By-law Script also supports operator overloading, which is particularly useful for describing condition nodes for plugins.
+法规脚本的语法与原生JavaScript语法非常相似，包括变量、常量、赋值、基本数据类型、函数、类和其他各种特性。除了基本的JavaScript语法外，法规脚本还支持操作符重载，这对于描述插件的条件节点特别有用。
 
-Figure \ref{fig:byLaw} illustrates how the By-law Script is executed within the DARC protocol. On the operator client side, the program of the By-law Script needs to be transpiled into vanilla JavaScript. Subsequently, it is executed in the local JavaScript runtime using a code generator. After the entire program is generated within the JSON body, it takes the form of a list of operations with opcodes and parameter lists. At this point, the program is ready to be submitted from the client side as a function call to the DARC Application Binary Interface (ABI) on the EVM-compatible blockchain.
+图 \ref{fig:byLaw} 展示了法规脚本在DARC协议中的编译和执行过程。在操作者客户端，法规脚本的程序需要被转译为原生JavaScript。随后，它在本地JavaScript运行时使用代码生成器执行。在整个程序以JSON体的形式生成后，它将成为一个包含操作码和参数列表的操作列表。此时，程序已准备好从客户端作为函数调用提交给EVM兼容区块链上的DARC应用二进制接口（ABI）。
 
-To execute the program within the DARC protocol, the DARC Software Development Kit (SDK) gains access to the address of the DARC smart contract and initiates the execution process by calling the entrance function with a wallet signature. This communication is facilitated through the JSON RPC server of the EVM-compatible blockchain.
+要在DARC协议中执行程序，DARC软件开发包（SDK）访问DARC智能合约的地址，并通过调用入口函数并附上钱包签名启动执行过程。这一通信过程通过EVM兼容区块链的JSON RPC服务器进行。
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{by-law.drawio.large.png}
-\caption{\label{fig:byLaw}The process of compiling and executing By-law Script}
+\caption{\label{fig:byLaw}编译和执行法规脚本的过程}
 \end{figure}
 
 
-\subsection{Transpiler}
+\subsection{转译器}
 
-After a user runs the By-law Script, the first step in the transpilation process involves converting the By-law Script into vanilla JavaScript. This initial transformation employs Babel.js \cite{githubGitHubBabelbabel} for front-end syntax analysis and utilizes an operator overloading plugin to generate the resulting vanilla JavaScript code.
+用户运行法规脚本后，转译过程的第一步是将法规脚本转换为原生JavaScript。这一初步转换使用Babel.js \cite{githubGitHubBabelbabel} 进行前端语法分析，并利用操作符重载插件生成结果原生JavaScript代码。
 
-The primary significance of using the operator overloading plugin lies in its ability to transpile the syntax of logical operators within condition nodes designed by the user. Users create plugins to logically connect and describe various condition expressions using logical operators. When these plugins are transpiled with the operator overloading feature, each condition within a plugin is transformed into a tree-like structure expressed as an object constructed using pure functions and parameters.
+使用操作符重载插件的主要意义在于它能够转译用户设计的条件节点中逻辑运算符的语法。用户创建插件来逻辑连接并描述各种条件表达式使用的逻辑运算符。当这些插件使用操作符重载功能进行转译时，插件中的每个条件都被转换为一个对象构造的树状结构，使用纯函数和参数表示。
 
-Furthermore, the transpiler also supports other advanced ECMAScript syntax and syntactic sugar, making it convenient for users to work with.
+此外，转译器还支持其他高级ECMAScript语法和语法糖，使用户使用起来更为方便。
 
-\subsection{Code Generator}
+\subsection{代码生成器}
 
-Once a user has successfully generated vanilla JavaScript from the transpilation of By-law Script, it can be executed within a JavaScript runtime environment, whether it's in Node.js or a web browser.
+一旦用户成功从法规脚本的转译生成了原生JavaScript，它就可以在JavaScript运行时环境中执行，无论是在Node.js还是Web浏览器中。
 
-The user-generated transpiled vanilla JavaScript code includes one or more operation command functions, each comprising opcodes and their corresponding parameters. Upon execution, each of these operation segments is stored in an array, ultimately forming a program object. Subsequently, the code generator leverages this program object to create a complete program JSON body, adhering to the DARC ABI entrance specifications.
+用户生成的转译原生JavaScript代码包括一个或多个操作命令函数，每个函数都包含操作码及其对应的参数。执行时，每个这样的操作段都存储在一个数组中，最终形成一个程序对象。随后，代码生成器利用这个程序对象创建一个完整的程序JSON体，符合DARC ABI入口规范。
 
-Once the program JSON body has been successfully generated, users can utilize ethers.js to send this program body, following the ABI, to the DARC protocol on an EVM-compatible blockchain. This process ensures that the program is executed in its entirety within the DARC.
+一旦程序JSON体成功生成，用户可以使用ethers.js根据ABI将此程序体发送至EVM兼容区块链上的DARC协议。这个过程确保了程序在DARC内完整地执行。
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{by-law-script-process.drawio.png}
-\caption{\label{fig:by-law-plugin}Transpiling and Code Generation for Plugins}
+\caption{\label{fig:by-law-plugin}插件的转译和代码生成过程}
 \end{figure}
 
-Figure \ref{fig:by-law-plugin} illustrates a complete compilation process. 
-
+图 \ref{fig:by-law-plugin} 展示了一个完整的编译过程。
 
 \end{document}

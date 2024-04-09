@@ -3,24 +3,23 @@
 
 
 
-\section{Principles of DARC Protocol}
+\section{DARC协议的原则}
 
-In designing DARC to be a regulated, programmable, customizable, profitable, and sustainable business entity, we adhere to the following principles:
+在设计DARC作为一个受监管的、可编程的、可定制的、有盈利性和可持续性的商业实体时，我们遵循以下原则：
 
-\subsection{Plugin as a Law}
+\subsection{插件即法律}
 
-For real-world companies, compliance with a multitude of laws and regulations is essential. This compliance encompasses not only a company's By-laws but also its internal policies, agreements between the company and its employees, contracts with customers and suppliers, and agreements among shareholders. These agreements and rules define the operational procedures and boundaries of the company, forming the foundation for its healthy operation and growth. They not only determine the company's structure but also provide detailed descriptions of how the company operates and how profits are distributed.
+对于现实世界中的公司，遵守众多法律和规章是必要的。这种合规不仅包括公司的章程，还包括其内部政策、公司与其员工之间的协议、与客户和供应商的合同以及股东之间的协议。这些协议和规则定义了公司的运营程序和界限，为其健康运营和增长奠定了基础。它们不仅确定了公司的结构，还提供了公司如何运作以及如何分配利润的详细描述。
 
+作为仅在EVM兼容区块链上存在的纯虚拟公司实体，DARC协议中的插件充当核心和基础机制，代表了各种章程、合同、法律协议、文件等。在每个DARC协议中，存在一组形成DARC管辖基础法律的插件集合。在DARC内进行的所有操作和活动都必须严格遵守这些插件概述的所有限制和条件。
 
-As a purely virtual corporate entity existing solely on an EVM-compatible blockchain, within the DARC protocol, plugins serve as a core and foundational mechanism, representing a variety of by-laws, contracts, legal agreements, documents, and more. In each DARC protocol, there exists a set of plugins that form the fundamental laws governing the DARC. All operations and activities conducted within the DARC must rigorously adhere to and comply with all restrictions and conditions outlined by these plugins.
+对于DARC协议，插件需要遵循以下原则：
 
-For the DARC protocol, plugins need to adhere to the following principles:
+\subsubsection{插件的设计}
 
-\subsubsection{Design of Plugins}
+每个插件由两个关键部分组成：“条件”和“决策”。“条件”代表激活插件的触发标准，而“决策”指定在满足条件时要采取的行动。
 
-Each plugin consists of two crucial components: ``condition'' and ``decision''. The ``condition'' represents the triggering criteria that activate the plugin, while the ``decision'' specifies the actions to be taken when the condition is met. 
-    
-The ``condition'' of each plugin is programmable and configurable, composed by a serial of condition expressions and logical operators(AND, OR, NOT). When an operation is executed with the condition triggered, the plugin responds by implementing the corresponding ``decision''. Below is an example of a plugin, designed in pseudo code:
+每个插件的“条件”都是可编程和可配置的，由一系列条件表达式和逻辑运算符（AND、OR、NOT）组成。当条件被触发执行操作时，插件通过实施相应的“决策”作出响应。以下是用伪代码设计的插件示例：
 
 \begin{spverbatim}
 
@@ -34,34 +33,33 @@ if (
 
 \end{spverbatim}
 
-The plugin condition above is a composed with four conditions, expressionA, expressionB, expressionC, expressionD, and three logical operators, AND, OR, NOT. When the condition is triggered, the plugin will make a decision of ``approved'' with a level of 100. In this way, each plugin can be designed to approve or deny operations based on the conditions and decisions specified by the plugin, and works as a law in the DARC protocol if the condition is triggered.
+上述插件条件由四个条件expressionA、expressionB、expressionC、expressionD和三个逻辑运算符AND、OR、NOT组成。当条件被触发时，插件将做出“approved”的决策，并设定等级为100。通过这种方式，每个插件可以根据插件指定的条件和决策来批准或拒绝操作，如果条件被触发，就在DARC协议中充当法律的角色。
 
-\subsubsection{Levels of Plugins}
+\subsubsection{插件的等级}
 
-For each operation, there is an associated ``level''. Within each DARC protocol, there are multiple plugins, each of which may have the same or different levels. When multiple plugins are triggered simultaneously for a single operation, the DARC protocol selects the plugin with the highest level and uses that plugin's decision as the final decision.
+对于每个操作，都有一个关联的“等级”。在每个DARC协议中，存在多个插件，每个插件可能有相同或不同的等级。当单个操作同时触发多个插件时，DARC协议会选择等级最高的插件，并使用该插件的决策作为最终决策。
 
-Additionally, all plugins at the same level must have the same decision type. This requirement ensures that when multiple plugins at the same level are triggered simultaneously, the final decision is consistent. This design simplifies the decision-making process and ensures that there is no ambiguity when multiple plugins of the same level are involved.
+此外，所有相同等级的插件必须有相同的决策类型。这一要求确保当同时触发相同等级的多个插件时，最终决策是一致的。这种设计简化了决策过程，并确保在涉及同一等级的多个插件时不会出现歧义。
 
-\subsubsection{Immutability of Plugins}
+\subsubsection{插件的不变性}
 
-Once a plugin is added to the DARC protocol, it cannot be changed or modified. Users have the capability to enable or disable one or multiple plugins through the use of ``enable operation'' or ``disable operation''.  When users wish to modify the rules represented by a plugin, they must disable the existing plugin that represents those rules and then add and enable a new plugin to replace it. This approach ensures that the integrity of the protocol is maintained while allowing for changes in the rules as needed by the users.
+一旦插件被添加到DARC协议中，就不能被更改或修改。用户可以通过使用“启用操作”或“禁用操作”来启用或禁用一个或多个插件。当用户希望修改由插件代表的规则时，他们必须禁用代表那些规则的现有插件，然后添加并启用一个新的插件来替换它。这种方法确保在需要用户更改规则时，协议的完整性得以维护。
 
-\subsubsection{Authority of Plugins}
+\subsubsection{插件的权限}
 
-In the DARC protocol, the plugin system holds authoritative control. For each operation, if it is rejected by the plugin system, it cannot proceed further. If the plugin system requires a vote, the operation can only be executed after undergoing the voting process. Only when the plugin system grants full approval can an operation be directly executed. This design ensures that the plugin system has the final say in the execution and validation of operations within the DARC protocol.
+在DARC协议中，插件系统拥有权威控制权。对于每个操作，如果它被插件系统拒绝，则不能继续进行。如果插件系统需要投票，操作只有在经过投票过程后才能执行。只有当插件系统给予完全批准时，操作才能直接执行。这种设计确保插件系统在DARC协议内的操作执行和验证中拥有最终发言权。
 
-In the DARC Protocol, operations related to plugins include enabling plugins, disabling plugins, adding plugins, and adding and enabling a plugin. When users execute these actions associated with plugins, they are required to adhere to the regulations and constraints set by the existing plugins, just like any other operations. These operations targeted at plugins can only be executed after receiving approval from the current set of plugins.
+在DARC协议中，涉及插件的操作包括启用插件、禁用插件、添加插件和添加并启用插件。当用户执行与插件相关的这些操作时，他们需要遵守现有插件设置的规章和约束，就像其他操作一样。这些针对插件的操作只有在得到当前插件集的批准后才能执行。
 
-In summary, any operations involving modifications to plugins must also receive approval from the current set of plugins. This ensures fairness and compliance with the rules and regulations established by the existing plugins within the DARC Protocol.
+总之，任何涉及修改插件的操作也必须得到当前插件集的批准。这确保了公平性，并遵守了DARC协议中现有插件建立的规则和规章。
 
+\subsection{程序和操作}
 
-\subsection{Program and Operations}
-
-For each DARC program, it consists of a series of operations, where each operation includes an opcode, a set of parameters, and an operator address. Below is an example of a DARC program with four operations:
+每个DARC程序由一系列操作组成，每个操作包括一个操作码、一组参数和一个操作者地址。以下是一个包含四个操作的DARC程序示例：
 
 \begin{spverbatim}
 
-// Notes: below is a DARC program with four operations
+// 注释：以下是一个包含四个操作的DARC程序
 operation1(param1, param2);
 operation2(param3);
 operation3();
@@ -73,117 +71,117 @@ operation4(
 
 \end{spverbatim}
 
-When an operator requests the DARC to execute a program, several scenarios may arise:
+当操作者请求DARC执行程序时，可能会出现几种情况：
 
-1. If one or more operations within this program receive a rejection decision from the plugin system, the entire program will be denied execution. In such a scenario, even if some of the operations meet the requirements, the program as a whole will be unable to proceed. 
+1. 如果程序中的一个或多个操作从插件系统收到拒绝决策，则整个程序将被拒绝执行。在这种情况下，即使某些操作满足要求，整个程序也将无法进行。
 
-2. If all operations within this program do not receive rejected decisions from the plugin system, but one or more operations in this program receive a ``voting needed'' decision, a voting process is initiated. In this scenario, all voting items will be consolidated into a single voting process, and the DARC enters a voting state. This allows all token holders to participate in the voting. If the program is approved through the voting process, it can proceed with execution. However, if it is rejected through the voting, the project will be rejected.
+2. 如果程序中的所有操作都没有从插件系统收到拒绝决策，但程序中的一个或多个操作收到“需要投票”的决策，则会启动投票过程。在这种情况下，所有投票项将被合并为一个单一的投票过程，DARC进入投票状态。这允许所有代币持有者参与投票。如果程序通过投票过程获得批准，则可以继续执行。然而，如果它通过投票被拒绝，则项目将被拒绝。
 
-3. If each operation within this program receives an ``approved'' decision from the plugin system, in this scenario, all operations within the program can be executed sequentially and directly.
+3. 如果程序中的每个操作都从插件系统收到“批准”的决策，在这种情况下，程序中的所有操作可以依次并直接执行。
 
-When the program is approved by the plugin system, the DARC will execute the program in the order in which the operations are listed. If the program is rejected by the plugin system, the DARC will not execute any of the operations within the program. The DARC may still throw exceptions if any runtime errors occur during the execution of the program. For example, if an operator attempts to transfer more tokens than it own, or disable a plugin with index larger than the total number of plugins, the DARC will throw an exception, reject the operation and the program, and revert the state of the DARC to the state before the program was executed.
+当程序被插件系统批准时，DARC将按照操作列出的顺序执行程序。如果程序被插件系统拒绝，DARC将不会执行程序中的任何操作。如果在执行程序期间出现任何运行时错误，DARC仍可能抛出异常。例如，如果操作者尝试转移超过其所拥有的代币数量，或禁用的插件索引大于插件总数，DARC将抛出异常，拒绝操作和程序，并将DARC的状态恢复到执行程序之前的状态。
 
-\subsection{Multi-level Token System}
+\subsection{多级代币系统}
 
-The DARC protocol features a multi-level token system, with each level of tokens having independent voting weights and dividend weights, where the minimum values for these weights can be set to 0. It's important to note that the voting weight and dividend weights for each level of tokens are immutable and cannot be altered. Users have the capability to initialize a new level and perform a range of operations, including minting, burning, transferring, and more for all tokens.
+DARC协议特有一个多级代币系统，每个级别的代币都有独立的投票权重和分红权重，这些权重的最小值可以设置为0。重要的是要注意，每个级别代币的投票权重和分红权重都是不可变的，不能被更改。用户有能力初始化一个新级别并执行一系列操作，包括铸造、销毁、转移等所有代币的操作。
 
-By assigning voting weights and dividend weights to tokens at each level, imposing limitations on token quantities, and incorporating additional plugins to restrict and design various token-related operations, multi-level tokens can serve a multitude of purposes, including common stock, bonds, board votes, A/B shares, preferred stock, common commodities, Non-Fungible Tokens (NFTs), and more.
+通过为每个级别的代币分配投票权重和分红权重，对代币数量施加限制，并结合其他插件来限制和设计各种与代币相关的操作，多级代币可以服务于多种目的，包括普通股、债券、董事会投票、A/B股、优先股、普通商品、非同质化代币（NFTs）等。
 
-Table \ref{table:6} is a simple example of a multi-level token system. In this example, the DARC protocol includes seven levels of tokens, each with different parameters and rules. The parameters include voting weight, dividend weight, and total supply. The rules include the conditions and decisions for minting, burning, transferring, and dividends. The table provides a comparison between the DARC protocol and a legal corporate entity, illustrating the similarities and differences between the two.
+表 \ref{table:6} 是一个多级代币系统的简单示例。在这个示例中，DARC协议包括七个级别的代币，每个级别都有不同的参数和规则。参数包括投票权重、分红权重和总供应量。规则包括铸造、销毁、转移和分红的条件和决策。该表比较了DARC协议和法律公司实体之间的相似之处和不同之处，以说明两者之间的相似性和差异。
 
 \begin{table}[h!]
     \centering
     \begin{tabular}{| c | c | c| c |} 
         \hline
-        Level & Token Name & Parameters & Rules \\ [0.5ex] 
+        级别 & 代币名称 & 参数 & 规则 \\ [0.5ex] 
         \hline\hline
-    0 & Board Member & \makecell[l]{Voting weight: 1 \\ Dividend weight: 0 \\ Total supply: 5} & \makecell[l]{1. Minting needs to be approved by \\  more than 70\% voting power of Class A \\ and B tokens. \\ 2. Burning or transferring needs to be \\ approved by all board members. \\ 3. Plugin-related operations need to \\ be approved by all board members.} \\
+    0 & 董事会成员 & \makecell[l]{投票权重: 1 \\ 分红权重: 0 \\ 总供应量: 5} & \makecell[l]{1. 铸造需要超过70\%的A类和B类\\ 代币投票权力的批准。 \\ 2. 销毁或转移需要所有董事会成员的\\ 批准。 \\ 3. 与插件相关的操作需要所有董事会\\ 成员的批准。} \\
     \hline 
-    1 & Executive  & \makecell[l]{Voting weight: 1 \\ Dividend weight: 0 \\ Total supply: 10} & \makecell[l]{1. Minting, burning or transferring needs \\ to be  approved by all board members. } \\
+    1 & 执行者  & \makecell[l]{投票权重: 1 \\ 分红权重: 0 \\ 总供应量: 10} & \makecell[l]{1. 铸造、销毁或转移需要所有董事会\\ 成员的批准。} \\
     \hline
-    2 & Class A Stock & \makecell[l]{Voting weight: 1 \\ Dividend weight: 1 \\ Total supply: 1000000} & \makecell[l]{1. Minting needs to be approved by \\ all board members. \\ 2. Burning needs to be approved by \\ all board members. \\ 3. Transferring needs to be approved \\ by all board members if the owner of \\ tokens has more than 10\% of the total supply. \\ 4. DARC pays 20\% of the total income to all \\ Class A and B Stock owners as dividends.} \\
+    2 & A类股票 & \makecell[l]{投票权重: 1 \\ 分红权重: 1 \\ 总供应量: 1000000} & \makecell[l]{1. 铸造需要所有董事会成员的批准。 \\ 2. 销毁需要所有董事会成员的批准。 \\ 3. 如果代币拥有者拥有超过总供应量10\%的\\ 代币，转移需要所有董事会成员的批准。 \\ 4. DARC将总收入的20\%作为分红支付给\\ 所有A类和B类股票持有者。} \\
     \hline
-    3 & Class B Stock & \makecell[l]{Voting weight: 10 \\ Dividend weight: 1 \\ Total supply: 500000} & \makecell[l]{1. Minting needs to be approved by \\ all board members. \\ 2. Burning needs to be approved by \\ all board members.} \\
+    3 & B类股票 & \makecell[l]{投票权重: 10 \\ 分红权重: 1 \\ 总供应量: 500000} & \makecell[l]{1. 铸造需要所有董事会成员的批准。 \\ 2. 销毁需要所有董事会成员的批准。} \\
     \hline
-    4 & Corporate Bond & \makecell[l]{Voting weight: 0 \\ Dividend weight: 0 \\ Total supply: 1000000} & \makecell[l]{1. Minting 1 bond costs 10000 wei \\  before 2030-01-01. \\ 2. Burning 1 bond returns 13000 wei \\ after 2035-01-01 \\ and before 2031-02-01. \\ 3. Transferring 1 bond costs 100 wei. \\ 4. Total supply should be less than 1000000.} \\
+    4 & 公司债券 & \makecell[l]{投票权重: 0 \\ 分红权重: 0 \\ 总供应量: 1000000} & \makecell[l]{1. 铸造1债券的成本为10000 wei \\ 在2030-01-01之前。 \\ 2. 销毁1债券在2035-01-01之后\\ 和2031-02-01之前返回13000 wei。 \\ 3. 转移1债券的成本为100 wei。 \\ 4. 总供应量应小于1000000。} \\
     \hline 
-    5 & Product Token & \makecell[l]{Voting weight: 0 \\ Dividend weight: 0 \\ Total supply: unlimited} & \makecell[l]{1. Minting 1 product token costs 2000 wei. \\ 2. Burning and refund needs to be  \\ approved by any executive.} \\
+    5 & 产品代币 & \makecell[l]{投票权重: 0 \\ 分红权重: 0 \\ 总供应量: 无限} & \makecell[l]{1. 铸造1个产品代币的成本为2000 wei。 \\ 2. 销毁和退款需要任何一名执行者的\\ 批准。} \\
     \hline
-    6 - 1000 & NFT & \makecell[l]{Voting weight: 0 \\ Dividend weight: 0 \\ Total supply: 1\\(for each level)} & \makecell[l]{1. Minting costs 10000000 wei per token. \\ 2. Burning is not allowed. \\ 3. Transferring costs 2500000 wei. \\ 4. If minting quantity is not 1, \\ or the supply of the target level is not 0, \\ minting is not allowed.} \\
+    6 - 1000 & NFT & \makecell[l]{投票权重: 0 \\ 分红权重: 0 \\ 总供应量: 1\\(对于每个级别)} & \makecell[l]{1. 铸造每个代币的成本为10000000 wei。 \\ 2. 不允许销毁。 \\ 3. 转移成本为2500000 wei。 \\ 4. 如果铸造数量不是1，\\ 或目标级别的供应量不是0，\\ 不允许铸造。} \\
     \hline
     \end{tabular}
-    \caption{An example of a multi-level token system in the DARC protocol.}
+    \caption{DARC协议中一个多级代币系统的示例。}
     \label{table:6}
     \end{table}
 
-\subsection{Dividends}
+\subsection{分红}
 
-A company has two methods of spending money: one is through direct cash payments, typically used for purchasing, salary disbursement, bill payments, and bond redemption, among other purposes. These payments generally involve one-time or multiple transactions of fixed amounts. The other method is through dividend payments, where the company allocates a specific amount or a certain percentage of funds and distributes them to all shareholders based on dividend weights.
+公司有两种花钱的方式：一种是通过直接现金支付，通常用于购买、发放工资、支付账单和债券赎回等目的。这些支付通常涉及一次性或多次的固定金额交易。另一种方式是通过分红支付，公司分配特定金额或一定比例的资金，并根据分红权重向所有股东分配。
 
-In the DARC protocol, the dividend mechanism distributes a dividend, which consists of $X$ permyriad of the accumulated income from every $N$ transactions. This dividend is distributed to all token holders based on their dividend weight. 
+在DARC协议中，分红机制分配的分红由每$N$笔交易累积收入的$X$千分之一组成。这份分红根据他们的分红权重分配给所有代币持有者。
 
-In the DARC protocol, there is a dividend cycle counter. Every time the DARC receives a dividendable payment, this counter automatically increments by 1, and the amount of this payment is added to the dividendable fund pool. When the dividend cycle counter reaches the predefined dividend cycle $N$ within the DARC protocol, users can, subject to approval by the plugin system, execute the ``\texttt{OFFER\_DIVIDENDS}'' operation. This operation disburses $X$ permyriad of the funds from the dividendable fund pool, calculates the dividends, and distributes them to the accounts of each token holder. Subsequently, both the dividendable fund pool and the dividend cycle counter are reset to zero.
+DARC协议中有一个分红周期计数器。每次DARC收到可分红支付时，这个计数器自动增加1，这笔支付的金额被添加到可分红资金池中。当分红周期计数器达到DARC协议中预定义的分红周期$N$时，用户可以在插件系统的批准下，执行“\texttt{OFFER\_DIVIDENDS}”操作。这个操作从可分红资金池中划出$X$千分之一的资金，计算分红，并将它们分配给每个代币持有者的账户。随后，可分红资金池和分红周期计数器都被重置为零。
 
 
 
-\subsection{Voting}
+\subsection{投票}
 
-In the DARC protocol, for operations that cannot be directly approved or denied by the plugin system after triggering specific conditions, a voting mechanism can be employed to make the final decision. The voting mechanism can serve various purposes, including:
+在DARC协议中，对于无法由插件系统在触发特定条件后直接批准或拒绝的操作，可以采用投票机制来作出最终决策。投票机制可以用于多种目的，包括：
 
-1. Democratic decision-making where all token holders have one vote each, suitable for major decisions involving a large number of token holders.
+1. 每个代币持有者都有一票的民主决策，适用于涉及大量代币持有者的重大决策。
 
-2. Quick and simple decision-making for smaller groups such as boards or committees.
+2. 适用于董事会或委员会等较小群体的快速简单决策。
 
-3. Approval processes for routine tasks involving multiple managers taking turns to approve daily affairs.
+3. 适用于涉及多个经理轮流批准日常事务的常规任务的审批过程。
 
-4. Weighted voting processes for different groups, including A/B classes or multiple levels of voting rights.
+4. 适用于不同群体的加权投票过程，包括A/B类或多级投票权。
 
-For each plugin, if the decision is ``voting needed'', the plugin must be associated with a voting item. When the condition of this plugin is triggered, and the plugin has the highest level among all the plugins with triggered conditions, DARC will select the voting item specified by that plugin as the voting rule. Once all the voting items are collected by DARC, a voting process will be initiated based on these items. All token holders who meet the criteria specified by this series of voting items are eligible to participate in the voting.
+对于每个插件，如果决策是“需要投票”，则该插件必须与一个投票项相关联。当这个插件的条件被触发，并且该插件在所有触发条件的插件中等级最高时，DARC将选择该插件指定的投票项作为投票规则。一旦DARC收集了所有投票项，就会根据这些项启动一个投票过程。所有符合这一系列投票项指定标准的代币持有者都有资格参加投票。
 
-After a program undergoes evaluation by the plugin system, each operation within the program may be subject to voting as requested by one or more plugins. Each plugin will point to a specific voting item. When DARC initiates a voting process, it collects all the voting items required for the operations and proceeds to the voting phase. Assuming that the total number of collected voting items is N, each voter must submit a program containing only one voting operation. This operation must include a boolean value array with a length of N, corresponding to the voting results for the N voting items. Each time an operator submits their vote, the voting process calculates the voting weight associated with that operator for each of the N voting items. It tallies the votes separately for each of the N voting items, adding the voting weight to the respective voting result. If a user's token balance is zero for one or more voting items, their voting weight for those specific items is also considered as zero.
+在插件系统评估程序后，程序中的每个操作可能会根据一个或多个插件的要求进行投票。每个插件都会指向一个特定的投票项。当DARC启动投票过程时，它会收集操作所需的所有投票项，并进入投票阶段。假设收集的总投票项数量为N，每个投票者必须提交只包含一个投票操作的程序。这个操作必须包括一个长度为N的布尔值数组，对应于N个投票项的投票结果。每次操作者提交他们的投票时，投票过程都会计算该操作者对每个N个投票项的投票权重。它分别为每个N个投票项的投票结果累计投票权重。如果用户的代币余额对于一个或多个投票项为零，则其对这些特定项的投票权重也被视为零。
 
-\subsection{Emergency}
+\subsection{紧急情况}
 
-In a rule-based corporate virtual machine, DARC operators may encounter various types of errors, including operational errors, incorrect parameters in operations, and various potential non-technical conflicts and disputes. DARC maintains a backdoor, known as ``emergency agents'', to serve as firefighters in emergency situations.
+在基于规则的公司虚拟机DARC中，操作者可能遇到各种类型的错误，包括操作错误、操作中的错误参数以及各种潜在的非技术冲突和争议。DARC维护一个后门，称为“紧急代理”，作为紧急情况下的消防员。
 
-In a DARC protocol, operators have the ability to designate multiple addresses as emergency agents. In the event of an emergency, and with the permission of the plugin system, operators can call upon one or more of these emergency agents for assistance. Once an emergency agent is summoned, they gain super-administrator privileges within the DARC, granting them the authority to perform any action. This includes adding, enabling, disabling plugins, conducting token operations, and managing cash assets.
+在DARC协议中，操作者有能力指定多个地址作为紧急代理。在紧急情况下，并且得到插件系统的许可，操作者可以召唤一个或多个这些紧急代理以寻求帮助。一旦紧急代理被召唤，他们在DARC中获得超级管理员权限，授予他们执行任何操作的权力。这包括添加、启用、禁用插件，进行代币操作和管理现金资产。
 
-Since emergency agents possess the highest level of comprehensive administrative authority, their role can be likened to that of both a court and a firefighter. Therefore, it is essential for all members of the DARC to have complete trust in these emergency agents. Additionally, specific conditions should be established for calling upon emergency agents to prevent them from taking untimely or inappropriate actions, which could lead to damage or losses within the DARC.
+由于紧急代理拥有最高级别的全面行政权限，他们的角色可以被视为法院和消防员的结合体。因此，对于DARC的所有成员来说，完全信任这些紧急代理是至关重要的。此外，应该为召唤紧急代理设定特定条件，以防止他们采取不合时宜或不适当的行动，这可能会对DARC造成损害或损失。
 
-\subsection{Compare DARC with Legal Corporate Entity}
+\subsection{将DARC与法律公司实体进行比较}
 
-Based on these principles, in Table \ref{table:4}, we compare the concepts of DARC and traditional joint-stock companies one by one. Although many concepts and mechanisms cannot be directly matched, this table attempts to analogize the similarities between DARC and traditional joint-stock companies, facilitating an understanding of various aspects of the DARC protocol.
+基于这些原则，在表 \ref{table:4} 中，我们一一比较了DARC和传统股份公司的概念。尽管许多概念和机制无法直接匹配，但此表尝试类比DARC和传统股份公司之间的相似性，以促进对DARC协议各方面的理解。
 
-Please note that due to DARC multi-token system, which can represent goods, different levels of equity, boards, committees, and other positions, and memberships can represent shareholders, special shareholders, employees, managers, and other operator roles and permissions, when using one or more levels of darc tokens or memberships to correspond to the characteristics and concepts of legal corporate entities, it is necessary to allow or prohibit operations based on the settings of the corresponding plugins. When a certain level of token or membership is endowed with a certain function or characteristic, and complete use of one or several plugins to specify the functions and rights of token holders and a certain level of membership, or to allow and prohibit operations, or to allow voting processes and scenarios, in such cases, these tokens and memberships can be used to represent these functions and characteristics.
+请注意，由于DARC多令牌系统可以代表商品、不同级别的股权、董事会、委员会和其他位置以及成员资格可以代表股东、特殊股东、雇员、经理和其他操作者角色和权限，当使用一个或多个级别的darc代币或成员资格来对应法律公司实体的特征和概念时，需要根据相应插件的设置允许或禁止操作。当某一级别的代币或成员资格被赋予某一功能或特征，并且完全使用一个或几个插件来指定代币持有者和某一级别成员的功能和权利，或允许和禁止操作，或允许投票过程和场景时，在这些情况下，这些代币和成员资格可以用来代表这些功能和特征。
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{| l | l | l|} 
     \hline
-    Concept & DARC & Legal Corporate Entity \\ [0.5ex] 
+    概念 & DARC & 法律公司实体 \\ [0.5ex] 
     \hline\hline
 
-    Currency & \makecell[l]{Native tokens of \\ EVM-compatible blockchain} & \makecell[l]{Fiat currency \\ (U.S. dollar, Euro, etc.)} \\
+    货币 & \makecell[l]{EVM兼容区块链的\\ 原生代币} & \makecell[l]{法定货币 \\ （美元、欧元等）} \\
     \hline
-    Corporate Entity & \makecell[l]{Compiled and deployed \\ DARC  virtual machine on \\  EVM-compatible blockchain} & \makecell[l]{Registered corporations \\ under government office} \\
+    公司实体 & \makecell[l]{在EVM兼容区块链上\\ 编译和部署的\\ DARC虚拟机} & \makecell[l]{在政府办公室下\\ 注册的公司} \\
     \hline
-    Shares & \makecell[l]{DARC tokens \\ (with voting weight \(\ge\) 1 \\ and dividend weight \(\ge\) 1)} & Stock certificates \\
+    股份 & \makecell[l]{DARC代币 \\ （投票权重≥1\\ 和分红权重≥1）} & 股票证书 \\
     \hline
-    Shareholders & DARC token holder addresses & Shareholders \\
+    股东 & DARC代币持有地址 & 股东 \\
     \hline
-    Capital Structure & \makecell[l]{DARC tokens \\ (with different voting weights \\ and dividend weights)} & \makecell[l]{Class A/B/C stocks, \\ preferred stocks } \\
+    资本结构 & \makecell[l]{DARC代币 \\ （具有不同的投票权重\\ 和分红权重）} & \makecell[l]{A/B/C类股票，\\ 优先股} \\
     \hline
-    Bonds & \makecell[l]{DARC tokens \\ (mintable at a certain price, \\ burnable at another certain price)} & Bond certificates \\
+    债券 & \makecell[l]{DARC代币 \\ （以某一价格可铸造，\\ 以另一价格可销毁）} & 债券证书 \\
     \hline
-    By-laws & A set of plugins & By-law documents \\
+    章程 & 一组插件 & 章程文件 \\
     \hline 
-    Board of directors & \makecell[l]{DARC token holder addresses \\ (with limited supply) \\ and a set of plugins} & Human committee members  \\
+    董事会 & \makecell[l]{DARC代币持有地址 \\ （供应量有限）\\ 和一组插件} & 人类委员会成员  \\
     \hline
-    Executives & \makecell[l]{Operator addresses \\ (with certain memberships) \\ and a set of plugins} & Human executives \\
+    高管 & \makecell[l]{操作者地址 \\ （具有特定的成员资格）\\ 和一组插件} & 人类高管 \\
     \hline
-    Employees & \makecell[l]{Operator addresses \\ (with certain memberships) \\ and a set of plugins} & Human employees \\
+    员工 & \makecell[l]{操作者地址 \\ （具有特定的成员资格）\\ 和一组插件} & 人类员工 \\
     \hline
-    \makecell[l]{Operation and \\Management} & \makecell[l]{Run By-law Script} & Sign documents \\
+    \makecell[l]{操作和\\管理} & \makecell[l]{运行法规脚本} & 签署文件 \\
     \hline
 
 
@@ -192,45 +190,45 @@ Please note that due to DARC multi-token system, which can represent goods, diff
 
     \hline
 \end{tabular}
-\caption{A comparison of the structures of DARC and a legal corporate entity}
+\caption{DARC与法律公司实体的结构比较}
 \label{table:4}
 \end{table}
 
-For daily operations and management, we also compare various concepts of DARC and legal corporate entities in Table \ref{table:5}.
+对于日常操作和管理，我们也在表 \ref{table:5} 中比较了DARC和法律公司实体的各种概念。
 
 \begin{table}[h!]
     \centering
     \begin{tabular}{| l | l| l|} 
         \hline
-        Concept & DARC & Legal Corporate Entity \\ [0.5ex] 
+        概念 & DARC & 法律公司实体 \\ [0.5ex] 
         \hline\hline
-    By-laws & \makecell[l]{1. Design all the core plugins related to by-laws. \\ 2. Design and run a By-law Script program including:\\ 2.1 Add and enable all plugins to the DARC. \\ 2.2 Add emergency agents. \\ 2.3 Add profile information. } & Write and sign by-law documents \\
+    章程 & \makecell[l]{1. 设计所有与章程相关的核心插件。 \\ 2. 设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 2.1 添加并启用所有插件到DARC。 \\ 2.2 添加紧急代理。 \\ 2.3 添加档案信息。} & 编写并签署章程文件 \\
     \hline
-    Issuing shares & \makecell[l]{Design and run a By-law Script program including: \\ 1. Initialize token classes and information. \\ 2. Mint common stock tokens to shareholders. \\ 3. Mint board member tokens to board member.} & \makecell[l]{Issue stock certificates} \\
+    发行股票 & \makecell[l]{设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 1. 初始化代币类别和信息。 \\ 2. 铸造普通股代币给股东。 \\ 3. 铸造董事会成员代币给董事会成员。} & \makecell[l]{发行股票证书} \\
     \hline
-    Investment & \makecell[l]{1. Design and run a By-law Script program including: \\ 1.1 Mint common stock tokens to shareholders. \\ 1.2 Disable unnecessary previous stock-related plugins. \\ 1.3 Add and enable new agreement plugins. \\ 1.4 Pay certain amount of tokens. \\ 2. Vote and approve the program. \\ 3. Execute the approved program. } & \makecell[l]{Issue stock certificates} \\
+    投资 & \makecell[l]{1. 设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 1.1 铸造普通股代币给股东。 \\ 1.2 禁用不必要的之前的股票相关插件。 \\ 1.3 添加并启用新的协议插件。 \\ 1.4 支付特定数量的代币。 \\ 2. 投票并批准程序。 \\ 3. 执行批准的程序。} & \makecell[l]{发行股票证书} \\
     
     \hline
-    Employment & \makecell[l]{Design and run a By-law Script program including: \\ 1. Add a new membership level, if necessary.\\ 2. Add new plugins to allow operator with \\ certain membership to withdraw cash monthly. \\ 3. Add new plugins to allow operator with \\ certain membership to mint RSU tokens annually. \\ 4. Add new employees to the membership. \\ 5. Allow manager-level operator to dismiss employee\\(removing employee from membership level).   } & \makecell[l]{Sign employment contracts, \\ pay payrolls and options/RSUs} \\
+    雇佣 & \makecell[l]{设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 1. 如有必要，添加一个新的成员资格级别。\\ 2. 添加新插件以允许具有\\ 某种成员资格的操作者每月提现现金。 \\ 3. 添加新插件以允许具有\\ 某种成员资格的操作者每年铸造RSU代币。 \\ 4. 将新员工添加到成员资格中。 \\ 5. 允许经理级别的操作者解雇员工\\（从成员资格级别中移除员工）。} & \makecell[l]{签署雇佣合同，\\ 支付工资和期权/RSUs} \\
     \hline
-    Purchase & \makecell[l]{Design and run a By-law Script program including: \\ 1. Pay cash to certain address \\ (External owned account, another DARC, \\ or other smart contract). }  & \makecell[l]{Electrical funds transfer \\ (eChecks, wire transfers, etc.)} \\
+    购买 & \makecell[l]{设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 1. 向特定地址支付现金\\（外部拥有的账户、另一个DARC、\\ 或其他智能合约）。}  & \makecell[l]{电子资金转账\\（电子支票、电汇等）} \\
     \hline
-    Dividends & \makecell[l]{Design and run a By-law Script program including: \\ 1. Offer dividends. } & \makecell[l]{Pay dividends quarterly or \\ yearly with payments} \\
+    分红 & \makecell[l]{设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 1. 提供分红。} & \makecell[l]{通过支付\\ 每季度或每年支付分红} \\
     \hline 
-    Stock tranding & \makecell[l]{Design and run a By-law Script program including: \\ 1. Transfer tokens from one address to another. } & \makecell[l]{Stock trading privately, \\ or on stock exchanges \\ or over-the-counter (OTC) \\ markets} \\
+    股票交易 & \makecell[l]{设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 1. 将代币从一个地址转移到另一个地址。} & \makecell[l]{私下股票交易，\\ 或在股票交易所\\ 或场外交易（OTC）\\ 市场上交易} \\
     \hline
-    Accept payments & \makecell[l]{Send or transfer native tokens to DARC, \\ or withdraw native tokens from other DARCs \\ or smart contracts.} & \makecell[l]{Accept payments from customers, \\ suppliers, and other parties} \\
+    接受支付 & \makecell[l]{向DARC发送或转移原生代币，\\ 或从其他DARCs或智能合约中提取原生代币。} & \makecell[l]{接受来自客户、\\ 供应商和其他方的支付} \\
     \hline 
-    Governance & \makecell[l]{Design and run a By-law Script program including: \\ 1. Design voting rules and add to the DARC. \\ 2. Add plugins to define scenarios that voting are needed. \\ Do voting when program is pending and voting is needed. } & \makecell[l]{Board meetings, \\ shareholder meetings, \\ and other corporate governance} \\
+    治理 & \makecell[l]{设计并运行一个包含以下内容的\\ 法规脚本程序：\\ 1. 设计投票规则并添加到DARC。 \\ 2. 添加插件以定义需要投票的场景。 \\ 当程序处于挂起状态且需要投票时进行投票。} & \makecell[l]{董事会会议，\\ 股东会议，\\ 以及其他公司治理} \\
     \hline 
-    \makecell[l]{Dispute and \\ litigation} & \makecell[l]{1. Add and enable emergency agents. \\ 2. Call emergency agents to resolve disputes. \\ 3. Contact emergency agents,  provide necessary \\ information, and pay the fee. \\ 4. The emergency agent operator takes over \\ the  DARC management, resolve issues or restore states.} & \makecell[l]{Legal actions, \\ arbitration, and mediation} \\
+    \makecell[l]{争议和\\ 诉讼} & \makecell[l]{1. 添加并启用紧急代理。 \\ 2. 召唤紧急代理以解决争议。 \\ 3. 联系紧急代理，提供必要的\\ 信息，并支付费用。 \\ 4. 紧急代理操作者接管\\ DARC管理，解决问题或恢复状态。} & \makecell[l]{法律行动，\\ 仲裁和调解} \\
     \hline
     
     
     
         \hline
     \end{tabular}
-    \caption{A comparision of operation and management between DARC and legal corporate entity}
+    \caption{DARC与法律公司实体的操作和管理比较}
     \label{table:5}
     \end{table}
 

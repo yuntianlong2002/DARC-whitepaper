@@ -2,55 +2,55 @@
 
 \begin{document}
 
-\section{Upgradablity}
+\section{可升级性}
 
-Once a compiled smart contract binary is deployed on an EVM-compatible blockchain, it becomes immutable, and any modifications to the binary are not possible. OpenZeppelin \cite{proxy} \cite{ethereumERC1967Proxy} utilizes a proxy-based approach for updates. The specific method involves deploying a proxy smart contract along with all the implementation smart contracts and setting an admin address. When there is a need to update the implementation contract, the admin can directly modify the proxy, redirecting the proxy to the new implementation contract address.
+一旦在EVM兼容区块链上部署了编译后的智能合约二进制文件，它就变得不可变，对二进制文件的任何修改都不可能。OpenZeppelin \cite{proxy} \cite{ethereumERC1967Proxy} 使用基于代理的方法进行更新。具体方法涉及部署一个代理智能合约以及所有实现智能合约，并设置一个管理员地址。当需要更新实现合约时，管理员可以直接修改代理，将代理重定向到新的实现合约地址。
 
-For the DARC protocol, the proxy upgrade pattern is not applicable because it requires setting an admin in the proxy. The admin in the DARC protocol would have complete control and modification rights, potentially overwriting all existing assets, plugins, and information, resulting in the admin's power surpassing that of all token holders at various levels. In a scenario where there is already an established corporate structure in a company, having a super administrator with the authority to modify all legal aspects, deal with all company shares, and manage assets would be a dangerous proposition.
+对于DARC协议，代理升级模式不适用，因为它需要在代理中设置管理员。DARC协议中的管理员将拥有完全的控制和修改权利，可能会覆盖所有现有资产、插件和信息，导致管理员的权力超过所有不同级别的代币持有者。在一个公司已经建立了公司结构的情况下，拥有一个拥有修改所有法律方面、处理所有公司股份和管理资产权限的超级管理员将是一个危险的提议。
 
-The program entrance serves as the unified and exclusive entry point for the DARC protocol. When upgrading from an old DARC instance X to a new DARC instance Y, the process involves configuring the upgrade address for the old DARC instance X and setting up the new DARC instance Y to accept all delegate programs from DARC instance X.After the upgrade, users can seamlessly continue executing programs in DARC instance X, and these programs will be delegated and executed within the new DARC instance Y.
+程序入口作为DARC协议的统一和唯一入口点。从旧的DARC实例X升级到新的DARC实例Y时，过程涉及为旧的DARC实例X配置升级地址，并设置新的DARC实例Y接受来自DARC实例X的所有委托程序。升级后，用户可以无缝地继续在DARC实例X中执行程序，这些程序将被委托并在新的DARC实例Y中执行。
 
-In the DARC protocol, there are three operations related to upgrades:
+在DARC协议中，有三个与升级相关的操作：
 
 \begin{itemize}
-    \item \texttt{upgradeToAddress(targetAddress)}: Upgrades the current DARC instance to the targetAddress. All programs submitted to the current DARC instance will be delegated and executed in the DARC instance at the targetAddress.
+    \item \texttt{upgradeToAddress(targetAddress)}：将当前DARC实例升级到targetAddress。所有提交给当前DARC实例的程序将被委托并在targetAddress处的DARC实例中执行。
     
-    \item \texttt{confirmUpgradedFromAddress(sourceAddress)}: Allows the current DARC instance to upgrade from the DARC instance at sourceAddress. When a program is proxied and submitted from sourceAddress, it is permitted to run in the current DARC instance with the operator identity of the program submitter.
+    \item \texttt{confirmUpgradedFromAddress(sourceAddress)}：允许当前DARC实例从sourceAddress处的DARC实例进行升级。当程序从sourceAddress代理提交时，允许它在当前DARC实例中以程序提交者的操作者身份运行。
 
-    \item \texttt{upgradeToTheLatest()}: If the current DARC instance A has been upgraded to the new DARC instance B, and the new DARC instance B has also been upgraded to the updated DARC instance C, executing this function will directly upgrade the DARC instance to DARC instance C. In other words, programs executed in this DARC instance A will be directly delegated and executed in DARC instance C, bypassing DARC instance B. This operation will be interpreted differently. Assuming a DARC instance A has already undergone an upgrade to DARC instance B, in such a scenario, if a user executes a program in A with only one \texttt{upgradeToTheLatest()} operation, the program will be executed in DARC instance A instead of being delegated to DARC instance B.
+    \item \texttt{upgradeToTheLatest()}：如果当前DARC实例A已经升级到新的DARC实例B，并且新的DARC实例B也已经升级到更新的DARC实例C，执行此函数将直接将DARC实例升级到DARC实例C。换句话说，在这个DARC实例A中执行的程序将直接在DARC实例C中委托和执行，绕过DARC实例B。这个操作将被不同地解释。假设一个DARC实例A已经升级到DARC实例B，在这样的场景下，如果用户在A中执行一个仅有一个\texttt{upgradeToTheLatest()}操作的程序，程序将在DARC实例A中执行，而不是被委托到DARC实例B。
 \end{itemize}
 
-With the three operations mentioned above, we can discuss two scenarios for upgrading the DARC protocol:
+通过上述三个操作，我们可以讨论升级DARC协议的两种场景：
 
-In the first scenario, where the user has already deployed My DARC 1, and My DARC 1 has not been upgraded to any other DARC, the following three steps are necessary:
+在第一个场景中，用户已经部署了My DARC 1，并且My DARC 1没有升级到任何其他DARC，需要以下三个步骤：
 
 \begin{enumerate}
-    \item Deploy the new version of My DARC 2 to the blockchain and complete all configurations.
-    \item Execute \texttt{confirmUpgradedFromAddress(MyDARC1Addr)} in My DARC 2, allowing My DARC 2 to accept programs and act as a proxy for My DARC 1.
-    \item Execute \texttt{upgradeToAddress(MyDARC2Addr)} in My DARC 1, completing the upgrade from My DARC 1 to My DARC 2.
+    \item 在区块链上部署新版本的My DARC 2并完成所有配置。
+    \item 在My DARC 2中执行\texttt{confirmUpgradedFromAddress(MyDARC1Addr)}，允许My DARC 2接受程序并作为My DARC 1的代理。
+    \item 在My DARC 1中执行\texttt{upgradeToAddress(MyDARC2Addr)}，完成从My DARC 1到My DARC 2的升级。
 \end{enumerate}
 
-Figure \ref{fig:upgrade} illustrates the entire process of upgrading directly from My DARC 1 to My DARC 2.
+图\ref{fig:upgrade}展示了直接从My DARC 1到My DARC 2的整个升级过程。
 
 
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{upgradability.drawio.png}
-\caption{\label{fig:upgrade}Upgrading from My DARC 1 to My DARC 2}
+\caption{\label{fig:upgrade}从My DARC 1升级到My DARC 2}
 \end{figure}
 
 
-In the second scenario, where the user has deployed My DARC 1, My DARC 1 has already been upgraded to My DARC 2, and the user intends to further upgrade to My DARC 3, the following three steps are required:
+在第二个场景中，用户已经部署了My DARC 1，My DARC 1已经升级到My DARC 2，并且用户打算进一步升级到My DARC 3，需要以下三个步骤：
 
 \begin{enumerate}
-    \item Deploy the new version of My DARC 3 on the blockchain and complete all configurations.
-    \item Execute \texttt{confirmUpgradedFromAddress(MyDARC1Addr)} in My DARC 3, enabling My DARC 3 to accept programs and proxies from My DARC 1.
-    \item Execute \texttt{upgradeToAddress(MyDARC2Addr)} in My DARC 1. Since this program will run in My DARC 2 under the proxy of My DARC 1, the \texttt{upgrade\_address} of My DARC 2 will point to the address of My DARC 3.
-    \item Execute \texttt{upgradeToTheLatest()} in My DARC 1, directing My DARC 1 to the address of My DARC 3 based on the address of My DARC 2, completing the upgrade from My DARC 1 to My DARC 3.
-    \item Finally, close My DARC 2.
+    \item 在区块链上部署新版本的My DARC 3并完成所有配置。
+    \item 在My DARC 3中执行\texttt{confirmUpgradedFromAddress(MyDARC1Addr)}，使My DARC 3能够接受程序和来自My DARC 1的代理。
+    \item 在My DARC 1中执行\texttt{upgradeToAddress(MyDARC2Addr)}。由于这个程序将在My DARC 1的代理下在My DARC 2中运行，My DARC 2的\texttt{upgrade\_address}将指向My DARC 3的地址。
+    \item 在My DARC 1中执行\texttt{upgradeToTheLatest()}，根据My DARC 2的地址直接将My DARC 1指向My DARC 3的地址，完成从My DARC 1到My DARC 3的升级。
+    \item 最后，关闭My DARC 2。
 \end{enumerate}
 
-Figure \ref{fig:upgrade-multi} illustrates the entire process of upgrading directly from My DARC 1 to My DARC 3.
+图\ref{fig:upgrade-multi}展示了直接从My DARC 1到My DARC 3的整个升级过程。
 
 
 
@@ -60,7 +60,7 @@ Figure \ref{fig:upgrade-multi} illustrates the entire process of upgrading direc
 \begin{figure}
 \centering
 \includegraphics[width=1\linewidth]{upgradablity-multi.drawio.png}
-\caption{\label{fig:upgrade-multi}Upgrading from My DARC 1 to My DARC 2 to My DARC 3}
+\caption{\label{fig:upgrade-multi}从My DARC 1升级到My DARC 2再到My DARC 3}
 \end{figure}
 
 \end{document}

@@ -2,7 +2,7 @@
 
 % Language setting
 % Replace `english' with e.g. `spanish' to change the document language
-\usepackage[english]{babel}
+\usepackage[provide=*,main=chinese]{babel}
 
 % Set page size and margins
 % Replace `letterpaper' with `a4paper' for UK/EU standard size
@@ -26,10 +26,14 @@
 \usepackage{makecell}
 \usepackage{authblk}
 \usepackage{blindtext}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setCJKmainfont{Songti SC}
 
 
 
-\title{DARC: Decentralized Autonomous Regulated Corporation}
+
+\title{DARC：去中心化自治规范公司}
 
 
 \author[1]{Xinran Wang \thanks{Corresponding author email: xinranw@proton.me}}
@@ -40,35 +44,35 @@
 
 
 
-\affil[1]{Project DARC}
-\affil[2]{NVIDIA Research}
-\affil[3]{Isenberg School of Management, UMass Amherst}
+\affil[1]{DARC项目}
+\affil[2]{NVIDIA 研究院}
+\affil[3]{伊森伯格管理学院，马萨诸塞大学阿默斯特分校}
 
 
 \begin{document}
 
 \maketitle
 
-\footnotetext[0]{In any scholarly discourse concerning the Decentralized Autonomous Regulated Corporation (DARC), encompassing academic papers, journals, books, documents, conference papers, manuals, reports, analyses, slides, as well as any literature or outputs of comparable nature, and further including any literature or outputs emerging from research and projects of academic, commercial, educational, governmental, or other affiliations either directly or indirectly sponsored or invested in the form of DARC, and any literature or outputs of analogous nature arising directly or indirectly from the utilization of any products associated with Project DARC, this paper imposes a mandatory requirement for authors or the institutional entities, groups, organizations, governments, schools, and the like involved in the projects to conscientiously incorporate this paper into the list of cited references in the scholarly literature.}
+\footnotetext[0]{在任何关于去中心化自治规范公司（DARC）的学术讨论中，包括学术论文、期刊、书籍、文件、会议论文、手册、报告、分析、幻灯片以及任何性质相当的文献或产出，以及进一步包括任何直接或间接由DARC形式赞助或投资的学术、商业、教育、政府或其他隶属机构的研究和项目产生的文献或产出，以及任何直接或间接使用与DARC项目相关产品产生的类似性质的文献或产出，本文强制要求作者或参与项目的机构实体、团体、组织、政府、学校等，必须在学术文献中谨慎地将本文纳入引用列表。}
 
-\footnotetext[1]{The architecture of DARC, interface, opcodes, condition nodes, plugins, by-law script, and other designs introduced in this paper are provided as reference designs. The final released version should be referenced from the implementation in the DARC code repository on GitHub: \url{https://github.com/project-darc/darc}}
+\footnotetext[1]{本文介绍的DARC的架构、接口、操作码、条件节点、插件、法规脚本以及其他设计提供为参考设计。最终发布版本应从GitHub上的DARC代码库中的实现参考：\url{https://github.com/project-darc/darc}}
 
 \begin{abstract}
-Decentralized autonomous organizations (DAOs) show promise but lack governance mechanisms. This paper proposes DARC, a Decentralized Autonomous Regulated Corporation designed to facilitate oversight of DAOs. DARC operates as a virtual machine on an EVM-compatible blockchain and incorporates configurable ``plugins'' outlining laws and rules. Users can run programs on the DARC virtual machine to execute company operations such as equity, cash, and voting, with all actions subject to constraints and rules defined by plugins. DARC supports multi-token systems and dividends distribution, resembling corporate features. The By-law Script serves as DARC's programming language, enabling the design of DARC programs and operations, as well as the customization of plugins.
+去中心化自治组织（DAOs）显示出前景，但缺乏治理机制。本文提出DARC，一个旨在促进对DAOs进行监督的去中心化自治规范公司。DARC作为一个虚拟机在EVM兼容区块链上运行，并包括配置“插件”来概述法律和规则。用户可以在DARC虚拟机上运行程序来执行公司操作，如股权、现金和投票，所有操作都受到插件定义的约束和规则的制约。DARC支持多令牌系统和分红分配，类似于公司特性。法规脚本作为DARC的编程语言，使得设计DARC程序和操作以及插件的定制成为可能。
 \end{abstract}
 
-\section{Introduction}
+\section{引言}
 
 
-Ethereum \cite{buterin2013ethereum}, launched in 2015, is a decentralized blockchain platform known for introducing smart contracts. These self-executing contracts enable trustless and automated transactions. Ethereum's contributions include fostering decentralized applications (dApps) and innovations like decentralized finance (DeFi) and non-fungible tokens (NFTs). Decentralized autonomous organizations (DAOs)\cite{jentzsch2016decentralized} have emerged as a novel form of internet-native organization mediated by tokenized governance systems. By leveraging cryptographic primitives from public blockchains, participation rights can be embedded directly into cryptoassets/tokens and allocated algorithmically without traditional corporate structures. However, early experiments like The DAO have exposed risks around security, flexibility, and real-world applicability.
+以太坊\cite{buterin2013ethereum}，于2015年推出，是一个去中心化的区块链平台，以引入智能合约而闻名。这些自执行合约使得无需信任的自动化交易成为可能。以太坊的贡献包括促进去中心化应用程序（dApps）和创新，如去中心化金融（DeFi）和非同质化代币（NFTs）。去中心化自治组织（DAOs）\cite{jentzsch2016decentralized}已作为一种新型的互联网原生组织形式出现，通过代币化的治理系统进行中介。通过利用公共区块链的加密原语，参与权利可以直接嵌入到加密资产/代币中，并在没有传统公司结构的情况下算法分配。然而，像The DAO这样的早期实验揭示了关于安全性、灵活性和现实世界适用性的风险。
 
-This paper introduces DARC - the Decentralized Autonomous Regulated Corporation. DARC incorporates modular ``plugins'' that encode rules and policies analogous to corporate bylaws. A multi-token system allows flexible rights allocation, mimicking shares. And a virtual machine architecture enables oversight and control of operations.
+本文介绍了DARC - 去中心化自治规范公司。DARC包含模块化的“插件”，编码规则和政策，类似于公司章程。多令牌系统允许灵活的权利分配，模仿股份。而虚拟机架构使得对操作的监督和控制成为可能。
 
-By synthesizing aspects from corporate structures and DAO architectures, DARC offers a regulated and adaptable foundation for decentralized organizations seeking real-world coordination. It bridges the gap between traditional corporations and autonomous DAOs.
+通过综合公司结构和DAO架构的方面，DARC为寻求现实世界协调的去中心化组织提供了一个受规范和适应性基础。它桥接了传统公司和自治DAOs之间的差距。
 
-The paper begins by delineating the key principles and design rationale in developing DARC. The overall system architecture is explained followed by specifics on essential sub-components: plugins, multi-token model, sandboxed execution, voting apparatus and others. Salient examples are also provided to illustrate the flexible configurability afforded by DARC across use cases spanning corporate stocks, bonds, boards, upgrades and emergency response among others.
+本文首先阐述了开发DARC的关键原则和设计理念。接下来解释了整体系统架构，以及插件、多令牌模型、沙盒执行、投票装置等关键子组件的具体内容。还提供了突出示例，以说明DARC在跨越公司股票、债券、董事会、升级和紧急响应等其他用例中所提供的灵活配置性。
 
-The paper concludes by reflecting on future directions for Decentralized Autonomous Regulated Corporations in catalyzing a new paradigm of organizational structures and economic coordination on the blockchain.
+本文最后反思了去中心化自治规范公司在催化区块链上的新组织结构和经济协调新范式的未来方向。
 
 
 \subfile{sub_principles}

@@ -1,25 +1,25 @@
 \documentclass[main.tex]{subfiles}
 \begin{document}
-\section{Emergency Agent}
+\section{紧急代理}
 
-In the DARC protocol, users frequently encounter various issues, such as:
+在DARC协议中，用户经常遇到各种问题，例如：
 
 \begin{enumerate}
-    \item Setting incorrect plugin parameters, triggering conditions, or performing erroneous token operations, rendering recovery impossible.
-    \item Locking certain critical operations in the DARC protocol, resulting in the permanent unavailability of functionalities within the protocol.
-    \item Human disputes leading to the organization's inability to operate, which cannot be resolved through plugins but may be addressed through manual litigation using documents, texts, evidence, etc.
-    \item Identifying vulnerabilities or facing attacks in the DARC protocol, necessitating an urgent pause and recovery.
-    \item Addressing other potential technical issues or disputes that may arise.
+    \item 设置不正确的插件参数、触发条件或执行错误的代币操作，使得恢复变得不可能。
+    \item 锁定DARC协议中的某些关键操作，导致协议内功能永久不可用。
+    \item 人为争议导致组织无法运作，这些争议无法通过插件解决，但可能通过使用文件、文本、证据等手动诉讼来解决。
+    \item 发现DARC协议的漏洞或面临攻击，需要紧急暂停和恢复。
+    \item 解决可能出现的其他潜在技术问题或争议。
 \end{enumerate}
 
-In the DARC protocol, users can designate one or more emergency agents for emergency situations. In the event of unforeseen circumstances, users can invite emergency agents to intervene. An emergency agent functions as a super administrator with the authority to execute any operation within the DARC protocol without being subject to any limitations imposed by plugins. This role is crucial for addressing urgent or unresolved issues within the DARC protocol.
+在DARC协议中，用户可以为紧急情况指定一个或多个紧急代理。在不可预见的情况下，用户可以邀请紧急代理进行干预。紧急代理作为一个超级管理员，拥有在DARC协议内执行任何操作的权限，不受插件限制。这个角色对于解决DARC协议内紧急或未解决的问题至关重要。
 
 \begin{enumerate}
-    \item \texttt{addEmergency(emergencyAgentAddress)}: This command is used to add an emergency agent by providing the address of the emergency agent. Once added, the emergency agent gains superadmin privileges, allowing them to execute any operation in the DARC protocol without being restricted by plugins.
+    \item \texttt{addEmergency(emergencyAgentAddress)}：此命令用于通过提供紧急代理的地址来添加紧急代理。一旦添加，紧急代理获得超级管理员权限，允许他们在DARC协议中执行任何操作，不受插件的限制。
 
-    \item \texttt{callEmergency(emergencyAgentAddress)}: This command is employed to invoke an emergency agent by specifying the address of the emergency agent to be called. Upon invocation, the emergency agent can take necessary emergency measures to address unforeseen situations and perform operations to ensure the normal functioning of the DARC.
+    \item \texttt{callEmergency(emergencyAgentAddress)}：此命令用于通过指定要调用的紧急代理的地址来调用紧急代理。调用后，紧急代理可以采取必要的紧急措施来处理不可预见的情况，并执行操作以确保DARC的正常运行。
 
-    \item \texttt{endEmergency()}: This command is utilized to conclude the emergency state. Once the emergency situation is resolved or addressed, users and emergency agent can use this command to end the emergency state and restore normal DARC protocol operations.
+    \item \texttt{endEmergency()}：此命令用于结束紧急状态。一旦紧急情况得到解决或处理，用户和紧急代理可以使用此命令结束紧急状态，并恢复DARC协议的正常操作。
 \end{enumerate}
 
 \end{document}
